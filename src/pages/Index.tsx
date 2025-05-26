@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -153,23 +152,6 @@ const Index = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
-              <h3 className="font-semibold text-gray-800 mb-4 text-right">התחומים הנבדקים:</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-right">
-                <div className="bg-red-50 p-3 rounded-lg border border-red-200">
-                  <span className="font-medium text-red-700">WAR - אזור מלחמה</span>
-                </div>
-                <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                  <span className="font-medium text-green-700">OPPORTUNITY - אזור הזדמנות</span>
-                </div>
-                <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                  <span className="font-medium text-yellow-700">COMFORT - אזור נוחות</span>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                  <span className="font-medium text-gray-700">APATHY - אזור אדישות</span>
-                </div>
-              </div>
-            </div>
             <div className="text-center space-y-4">
               <p className="text-gray-600">השאלון כולל 40 שאלות בסדר אקראי</p>
               <p className="text-gray-600">זמן משוער למילוי: 8-10 דקות</p>
