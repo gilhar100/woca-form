@@ -1,13 +1,12 @@
 
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from "@/components/ui/textarea";
 
 interface PersonalDetailsForm {
   fullName: string;
@@ -21,29 +20,16 @@ interface PersonalDetailsForm {
   phone: string;
 }
 
-interface LocationState {
-  answers: Record<string, number>;
-}
-
 const PersonalDetails = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const state = location.state as LocationState;
-
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<PersonalDetailsForm>();
-
-  if (!state?.answers) {
-    navigate('/');
-    return null;
-  }
 
   const onSubmit = (data: PersonalDetailsForm) => {
     console.log('Personal details submitted:', data);
     
-    // מעבר לחלונית אישור עם כל הנתונים
-    navigate('/consent', {
+    // מעבר לשאלון עם הפרטים האישיים
+    navigate('/questionnaire', {
       state: {
-        answers: state.answers,
         personalDetails: data
       }
     });
@@ -188,7 +174,7 @@ const PersonalDetails = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate('/', { state: { answers: state.answers } })}
+                  onClick={() => navigate('/')}
                   className="px-8"
                 >
                   חזור
@@ -197,7 +183,7 @@ const PersonalDetails = () => {
                   type="submit"
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8"
                 >
-                  המשך
+                  המשך לשאלון
                 </Button>
               </div>
             </form>
