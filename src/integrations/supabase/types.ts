@@ -9,7 +9,57 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      woca_responses: {
+        Row: {
+          age: number | null
+          consent_research: boolean
+          created_at: string
+          education: string | null
+          email: string | null
+          experience_years: number | null
+          full_name: string
+          gender: string | null
+          id: string
+          organization: string | null
+          overall_score: number
+          phone: string | null
+          profession: string | null
+          scores: Json
+        }
+        Insert: {
+          age?: number | null
+          consent_research?: boolean
+          created_at?: string
+          education?: string | null
+          email?: string | null
+          experience_years?: number | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          organization?: string | null
+          overall_score: number
+          phone?: string | null
+          profession?: string | null
+          scores: Json
+        }
+        Update: {
+          age?: number | null
+          consent_research?: boolean
+          created_at?: string
+          education?: string | null
+          email?: string | null
+          experience_years?: number | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          organization?: string | null
+          overall_score?: number
+          phone?: string | null
+          profession?: string | null
+          scores?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

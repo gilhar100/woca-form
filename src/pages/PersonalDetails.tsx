@@ -1,0 +1,211 @@
+
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
+
+interface PersonalDetailsForm {
+  fullName: string;
+  age: number;
+  gender: string;
+  education: string;
+  profession: string;
+  organization: string;
+  experienceYears: number;
+  email: string;
+  phone: string;
+}
+
+interface LocationState {
+  answers: Record<string, number>;
+}
+
+const PersonalDetails = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as LocationState;
+
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<PersonalDetailsForm>();
+
+  if (!state?.answers) {
+    navigate('/');
+    return null;
+  }
+
+  const onSubmit = (data: PersonalDetailsForm) => {
+    console.log('Personal details submitted:', data);
+    
+    // מעבר לחלונית אישור עם כל הנתונים
+    navigate('/consent', {
+      state: {
+        answers: state.answers,
+        personalDetails: data
+      }
+    });
+  };
+
+  const genderValue = watch('gender');
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+      <div className="max-w-2xl mx-auto">
+        <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              פרטים אישיים
+            </CardTitle>
+            <p className="text-gray-600 mt-2">
+              נשמח לקבל פרטים נוספים כדי לשפר את המחקר
+            </p>
+          </CardHeader>
+          
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* שם מלא */}
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-right block">שם מלא *</Label>
+                <Input
+                  id="fullName"
+                  {...register('fullName', { required: 'שדה חובה' })}
+                  className="text-right"
+                  placeholder="הזן שם מלא"
+                />
+                {errors.fullName && (
+                  <p className="text-red-500 text-sm text-right">{errors.fullName.message}</p>
+                )}
+              </div>
+
+              {/* גיל */}
+              <div className="space-y-2">
+                <Label htmlFor="age" className="text-right block">גיל</Label>
+                <Input
+                  id="age"
+                  type="number"
+                  {...register('age', { valueAsNumber: true, min: 18, max: 100 })}
+                  className="text-right"
+                  placeholder="הזן גיל"
+                />
+              </div>
+
+              {/* מגדר */}
+              <div className="space-y-3">
+                <Label className="text-right block">מגדר</Label>
+                <RadioGroup 
+                  value={genderValue} 
+                  onValueChange={(value) => setValue('gender', value)}
+                  className="flex justify-end gap-6"
+                >
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    <Label htmlFor="male">זכר</Label>
+                    <RadioGroupItem value="male" id="male" />
+                  </div>
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    <Label htmlFor="female">נקבה</Label>
+                    <RadioGroupItem value="female" id="female" />
+                  </div>
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    <Label htmlFor="other">אחר</Label>
+                    <RadioGroupItem value="other" id="other" />
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* השכלה */}
+              <div className="space-y-2">
+                <Label htmlFor="education" className="text-right block">השכלה</Label>
+                <Input
+                  id="education"
+                  {...register('education')}
+                  className="text-right"
+                  placeholder="תואר, מקצוע, וכו'"
+                />
+              </div>
+
+              {/* מקצוע */}
+              <div className="space-y-2">
+                <Label htmlFor="profession" className="text-right block">מקצוע</Label>
+                <Input
+                  id="profession"
+                  {...register('profession')}
+                  className="text-right"
+                  placeholder="תפקיד נוכחי"
+                />
+              </div>
+
+              {/* ארגון */}
+              <div className="space-y-2">
+                <Label htmlFor="organization" className="text-right block">ארגון/חברה</Label>
+                <Input
+                  id="organization"
+                  {...register('organization')}
+                  className="text-right"
+                  placeholder="שם מקום העבודה"
+                />
+              </div>
+
+              {/* שנות ניסיון */}
+              <div className="space-y-2">
+                <Label htmlFor="experienceYears" className="text-right block">שנות ניסיון</Label>
+                <Input
+                  id="experienceYears"
+                  type="number"
+                  {...register('experienceYears', { valueAsNumber: true, min: 0 })}
+                  className="text-right"
+                  placeholder="מספר שנות ניסיון"
+                />
+              </div>
+
+              {/* אימייל */}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-right block">אימייל</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register('email')}
+                  className="text-left"
+                  placeholder="example@email.com"
+                />
+              </div>
+
+              {/* טלפון */}
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-right block">טלפון</Label>
+                <Input
+                  id="phone"
+                  {...register('phone')}
+                  className="text-left"
+                  placeholder="050-1234567"
+                />
+              </div>
+
+              {/* כפתורים */}
+              <div className="flex gap-4 justify-center pt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate('/', { state: { answers: state.answers } })}
+                  className="px-8"
+                >
+                  חזור
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8"
+                >
+                  המשך
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default PersonalDetails;
