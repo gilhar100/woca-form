@@ -6,12 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface PersonalDetailsForm {
   fullName: string;
-  age: number;
-  gender: string;
   education: string;
   profession: string;
   organization: string;
@@ -22,7 +19,7 @@ interface PersonalDetailsForm {
 
 const PersonalDetails = () => {
   const navigate = useNavigate();
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<PersonalDetailsForm>();
+  const { register, handleSubmit, formState: { errors } } = useForm<PersonalDetailsForm>();
 
   const onSubmit = (data: PersonalDetailsForm) => {
     console.log('Personal details submitted:', data);
@@ -34,8 +31,6 @@ const PersonalDetails = () => {
       }
     });
   };
-
-  const genderValue = watch('gender');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
@@ -64,41 +59,6 @@ const PersonalDetails = () => {
                 {errors.fullName && (
                   <p className="text-red-500 text-sm text-right">{errors.fullName.message}</p>
                 )}
-              </div>
-
-              {/* גיל */}
-              <div className="space-y-2">
-                <Label htmlFor="age" className="text-right block">גיל</Label>
-                <Input
-                  id="age"
-                  type="number"
-                  {...register('age', { valueAsNumber: true, min: 18, max: 100 })}
-                  className="text-right"
-                  placeholder="הזן גיל"
-                />
-              </div>
-
-              {/* מגדר */}
-              <div className="space-y-3">
-                <Label className="text-right block">מגדר</Label>
-                <RadioGroup 
-                  value={genderValue} 
-                  onValueChange={(value) => setValue('gender', value)}
-                  className="flex justify-end gap-6"
-                >
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <Label htmlFor="male">זכר</Label>
-                    <RadioGroupItem value="male" id="male" />
-                  </div>
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <Label htmlFor="female">נקבה</Label>
-                    <RadioGroupItem value="female" id="female" />
-                  </div>
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <Label htmlFor="other">אחר</Label>
-                    <RadioGroupItem value="other" id="other" />
-                  </div>
-                </RadioGroup>
               </div>
 
               {/* השכלה */}

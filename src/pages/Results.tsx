@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 
 interface LocationState {
   scores: {
@@ -13,7 +13,6 @@ interface LocationState {
     COMFORT: number;
     APATHY: number;
   };
-  overallScore: number;
 }
 
 const Results = () => {
@@ -26,7 +25,7 @@ const Results = () => {
     return null;
   }
 
-  const { scores, overallScore } = state;
+  const { scores } = state;
 
   const chartData = [
     {
@@ -102,14 +101,6 @@ const Results = () => {
     return colors[domain as keyof typeof colors];
   };
 
-  const getOverallInterpretation = (score: number) => {
-    if (score >= 4) return "פרופיל ניהולי דומיננטי עם נטיות חזקות";
-    if (score >= 3.5) return "פרופיל ניהולי בולט עם מאפיינים ברורים";
-    if (score >= 3) return "פרופיל ניהולי מאוזן עם מאפיינים מתונים";
-    if (score >= 2.5) return "פרופיל ניהולי גמיש עם מאפיינים מגוונים";
-    return "פרופיל ניהולי מותאם למצב עם גמישות גבוהה";
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -121,20 +112,6 @@ const Results = () => {
             </CardTitle>
             <p className="text-xl text-gray-600 mt-2">אזורי תודעה ארגונית</p>
           </CardHeader>
-        </Card>
-
-        {/* Overall Score */}
-        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-2xl text-center text-gray-800">ציון WOCA כללי</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <div className="text-6xl font-bold text-blue-600 mb-4">
-              {overallScore.toFixed(2)}
-            </div>
-            <Progress value={(overallScore / 5) * 100} className="h-4 mb-4" />
-            <p className="text-lg text-gray-600">{getOverallInterpretation(overallScore)}</p>
-          </CardContent>
         </Card>
 
         {/* Charts */}
@@ -259,7 +236,6 @@ const Results = () => {
                   <li>• כל תחום מכיל 10 שאלות</li>
                   <li>• שאלות מסוימות מחושבות הפוך</li>
                   <li>• ציון התחום = ממוצע השאלות</li>
-                  <li>• ציון כללי = ממוצע 4 התחומים</li>
                 </ul>
               </div>
               <div>
