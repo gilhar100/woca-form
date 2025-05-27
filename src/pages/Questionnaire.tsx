@@ -104,85 +104,85 @@ const Questionnaire = () => {
   const isAnswered = currentAnswer !== undefined;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-2 sm:p-4" dir="rtl">
+      <div className="max-w-2xl mx-auto">
         <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden">
-          <CardHeader className="text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-8">
-            <CardTitle className="text-4xl font-bold mb-2">
+          <CardHeader className="text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 sm:py-8">
+            <CardTitle className="text-2xl sm:text-4xl font-bold mb-2">
               שאלון WOCA
             </CardTitle>
-            <p className="text-xl opacity-90 mb-1">
+            <p className="text-base sm:text-xl opacity-90 mb-1">
               אזורי תודעה ארגונית
             </p>
-            <p className="text-base opacity-80">
+            <p className="text-sm sm:text-base opacity-80">
               שלום {state.personalDetails.fullName}, שאלה {currentQuestion + 1} מתוך {questions.length}
             </p>
           </CardHeader>
 
-          <CardContent className="py-12 px-8">
+          <CardContent className="py-6 sm:py-12 px-4 sm:px-8">
             {/* התקדמות */}
-            <div className="mb-10">
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-sm font-medium text-gray-600">
+            <div className="mb-6 sm:mb-10">
+              <div className="flex justify-between items-center mb-2 sm:mb-3">
+                <span className="text-xs sm:text-sm font-medium text-gray-600">
                   {currentQuestion + 1} / {questions.length}
                 </span>
-                <span className="text-sm font-medium text-gray-600">
+                <span className="text-xs sm:text-sm font-medium text-gray-600">
                   {Math.round(((currentQuestion + 1) / questions.length) * 100)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
+              <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3 shadow-inner">
                 <div 
-                  className="bg-gradient-to-l from-blue-600 to-purple-600 h-3 rounded-full transition-all duration-500 ease-out shadow-lg" 
+                  className="bg-gradient-to-l from-blue-600 to-purple-600 h-2 sm:h-3 rounded-full transition-all duration-500 ease-out shadow-lg" 
                   style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
                 ></div>
               </div>
             </div>
 
             {/* השאלה */}
-            <div className="text-center mb-12">
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 shadow-lg border border-blue-100">
-                <Label className="text-2xl font-bold text-gray-800 leading-relaxed block text-right">
+            <div className="text-center mb-8 sm:mb-12">
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-lg border border-blue-100">
+                <Label className="text-lg sm:text-2xl font-bold text-gray-800 leading-relaxed block text-right">
                   {questions[currentQuestion]}
                 </Label>
               </div>
             </div>
 
-            {/* אפשרויות התשובה */}
-            <div className="space-y-8">
+            {/* אפשרויות התשובה - מותאם למובייל */}
+            <div className="space-y-6 sm:space-y-8">
               <RadioGroup 
                 value={currentAnswer?.toString() || ""} 
                 onValueChange={(value) => handleAnswerChange(parseInt(value))}
-                className="space-y-6"
+                className="space-y-4 sm:space-y-6"
               >
                 {/* תוויות קיצוניות */}
-                <div className="flex justify-between items-center px-4">
+                <div className="flex justify-between items-center px-2 sm:px-4">
                   <div className="text-center">
-                    <span className="text-lg font-semibold text-red-600">לא מסכים בכלל</span>
-                    <div className="text-sm text-gray-500 mt-1">1</div>
+                    <span className="text-sm sm:text-lg font-semibold text-red-600">לא מסכים בכלל</span>
+                    <div className="text-xs sm:text-sm text-gray-500 mt-1">1</div>
                   </div>
                   <div className="text-center">
-                    <span className="text-lg font-semibold text-green-600">מסכים מאוד</span>
-                    <div className="text-sm text-gray-500 mt-1">5</div>
+                    <span className="text-sm sm:text-lg font-semibold text-green-600">מסכים מאוד</span>
+                    <div className="text-xs sm:text-sm text-gray-500 mt-1">5</div>
                   </div>
                 </div>
                 
-                {/* כפתורי הבחירה */}
-                <div className="flex justify-center items-center gap-12 py-8">
+                {/* כפתורי הבחירה - גרסה מובייל */}
+                <div className="flex justify-center items-center gap-4 sm:gap-12 py-4 sm:py-8">
                   {[1, 2, 3, 4, 5].map(value => (
-                    <div key={value} className="flex flex-col items-center space-y-3">
+                    <div key={value} className="flex flex-col items-center space-y-2 sm:space-y-3">
                       <div className="relative">
                         <RadioGroupItem 
                           value={value.toString()} 
                           id={`question-${currentQuestion}-${value}`}
-                          className="w-8 h-8 border-2 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 transition-all duration-200 hover:scale-110"
+                          className="w-6 h-6 sm:w-8 sm:h-8 border-2 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 transition-all duration-200 hover:scale-110"
                         />
                         {currentAnswer === value && (
-                          <div className="absolute -inset-2 rounded-full bg-blue-100 -z-10 animate-pulse"></div>
+                          <div className="absolute -inset-1 sm:-inset-2 rounded-full bg-blue-100 -z-10 animate-pulse"></div>
                         )}
                       </div>
                       <Label 
                         htmlFor={`question-${currentQuestion}-${value}`}
-                        className="text-xl font-bold cursor-pointer hover:text-blue-600 transition-colors duration-200"
+                        className="text-lg sm:text-xl font-bold cursor-pointer hover:text-blue-600 transition-colors duration-200"
                       >
                         {value}
                       </Label>
@@ -199,19 +199,19 @@ const Questionnaire = () => {
               </RadioGroup>
             </div>
 
-            {/* כפתורי ניווט */}
-            <div className="flex justify-between items-center pt-12 border-t border-gray-200">
+            {/* כפתורי ניווט - מותאם למובייל */}
+            <div className="flex flex-col sm:flex-row justify-between items-center pt-8 sm:pt-12 border-t border-gray-200 gap-4 sm:gap-0">
               <Button
                 onClick={handlePrevious}
                 disabled={currentQuestion === 0}
                 variant="outline"
-                className="px-8 py-3 text-lg font-semibold disabled:opacity-50 hover:bg-gray-50 transition-colors duration-200"
+                className="w-full sm:w-auto px-4 sm:px-8 py-2 sm:py-3 text-base sm:text-lg font-semibold disabled:opacity-50 hover:bg-gray-50 transition-colors duration-200"
               >
                 ← שאלה קודמת
               </Button>
               
-              <div className="text-center">
-                <div className="text-sm text-gray-500 mb-1">
+              <div className="text-center order-first sm:order-none">
+                <div className="text-xs sm:text-sm text-gray-500 mb-1">
                   נותרו {questions.length - currentQuestion - 1} שאלות
                 </div>
                 <div className="text-xs text-gray-400">
@@ -222,7 +222,7 @@ const Questionnaire = () => {
               <Button 
                 onClick={handleNext}
                 disabled={!isAnswered}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg font-semibold disabled:opacity-50 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 sm:px-8 py-2 sm:py-3 text-base sm:text-lg font-semibold disabled:opacity-50 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {currentQuestion === questions.length - 1 ? '✓ סיום השאלון' : 'שאלה הבאה →'}
               </Button>
