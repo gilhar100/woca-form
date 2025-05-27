@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,8 +19,13 @@ const Results = () => {
   const navigate = useNavigate();
   const state = location.state as LocationState;
 
-  if (!state) {
-    navigate('/');
+  useEffect(() => {
+    if (!state?.scores) {
+      navigate('/');
+    }
+  }, [state, navigate]);
+
+  if (!state?.scores) {
     return null;
   }
 
