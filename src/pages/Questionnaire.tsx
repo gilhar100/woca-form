@@ -155,7 +155,7 @@ const Questionnaire = () => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </RadioGroup>
             </div>
 
             <div className="flex justify-between items-center pt-6">
