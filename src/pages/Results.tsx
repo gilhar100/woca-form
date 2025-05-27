@@ -73,22 +73,42 @@ const Results = () => {
     }
   ];
 
-  const getInterpretation = (domain: string, score: number) => {
+  const getDetailedInterpretation = (domain: string, score: number) => {
     const interpretations = {
-      WAR: score >= 3.5 
-        ? "ניהול אגרסיבי ולא פשרני. נטייה לעמדות קיצוניות ורצון להכריע בכל מחיר."
-        : "גישה מתונה יותר, פתוחות לפשרות ולשמירה על יחסים.",
-      OPPORTUNITY: score >= 3.5
-        ? "ניהול פתוח, גמיש וחדשני. יכולת לזהות הזדמנויות ולהסתגל לשינויים."
-        : "נטייה לשמרנות ויותר זהירות בפני שינויים ורעיונות חדשים.",
-      COMFORT: score >= 3.5
-        ? "ניהול שמרני, לא דינמי ולא מחפש שינויים. העדפה לשמירה על הקיים."
-        : "פתוחות לשינויים ויוזמה לחידושים.",
-      APATHY: score >= 3.5
-        ? "ניהול פסיבי, ללא יוזמה ועם תחושת חוסר מסוגלות להשפיע."
-        : "תחושת מסוגלות גבוהה ורצון לפעול ולשפר."
+      WAR: {
+        title: "War (מלחמה)",
+        description: "ציון גבוה מעיד על תחושת איום תמידית, לחץ, ומאבקים פנימיים בארגון. הארגון משקיע משאבים רבים בהישרדות ובתגובה למצבי משבר חוזרים ונשנים, מה שמונע פיתוח וצמיחה.",
+        highScore: "הארגון נמצא במצב של לחץ קבוע ומאבקים פנימיים. ישנה תחושת איום מתמדת ומשקיעים משאבים רבים בהישרדות במקום בפיתוח.",
+        lowScore: "הארגון אינו נמצא במצב של משבר או לחץ קיצוני. ישנה יכולת להתמקד בפיתוח ובצמיחה במקום רק בהישרדות."
+      },
+      OPPORTUNITY: {
+        title: "Opportunity (הזדמנות)",
+        description: "ציון גבוה באזור זה הוא הרצוי ביותר, ומעיד שהארגון נמצא במצב אופטימלי. קיימת תחושת התלהבות, פתיחות, ומוכנות לנצל הזדמנויות. התרבות הארגונית מעודדת חדשנות, למידה, וגמישות מחשבתית, מה שמאפשר לארגון לצמוח ולהתפתח.",
+        highScore: "מצב אידיאלי! הארגון נמצא במצב אופטימלי עם תחושת התלהבות ופתיחות. התרבות הארגונית מעודדת חדשנות, למידה וגמישות מחשבתית המאפשרים צמיחה והתפתחות.",
+        lowScore: "הארגון מתקשה לזהות ולנצל הזדמנויות חדשות. ייתכן שקיימת נטייה לשמרנות ופחות פתיחות לחדשנות ושינויים."
+      },
+      COMFORT: {
+        title: "Comfort (נוחות)",
+        description: "ציון גבוה באזור זה מציין שהארגון נמצא באזור נוחות מוגזם. למרות שהארגון מתנהל בשלווה ויציבות, קיימת הימנעות משינויים, חוסר יוזמה, ושאננות. המצב הנוח מביא לקיפאון והיעדר חדשנות וצמיחה ארוכת טווח.",
+        highScore: "הארגון נמצא באזור נוחות מוגזם. למרות היציבות והשלווה, קיימת הימנעות משינויים וחוסר יוזמה שעלולים להוביל לקיפאון וחוסר חדשנות.",
+        lowScore: "הארגון אינו נמצא באזור נוחות מוגזם. ישנה פתיחות לשינויים ויוזמה לחידושים ופיתוח."
+      },
+      APATHY: {
+        title: "Apathy (אדישות)",
+        description: "ציון גבוה מעיד על מצב של אדישות וניתוק רגשי ומנטלי של העובדים מהארגון. קיימת תחושת חוסר אונים, ירידה במוטיבציה, וירידה משמעותית בביצועים. במצב זה הארגון מתקשה להתמודד עם אתגרים או לנצל הזדמנויות חדשות.",
+        highScore: "מצב של אדישות וניתוק רגשי ומנטלי של העובדים מהארגון. קיימת תחושת חוסר אונים, ירידה במוטיבציה ובביצועים, וקושי להתמודד עם אתגרים חדשים.",
+        lowScore: "רמת מעורבות גבוהה של העובדים בארגון. תחושת מסוגלות חזקה, מוטיבציה גבוהה ויכולת טובה להתמודד עם אתגרים ולנצל הזדמנויות."
+      }
     };
-    return interpretations[domain as keyof typeof interpretations];
+    
+    const domainData = interpretations[domain as keyof typeof interpretations];
+    const interpretation = score >= 3.5 ? domainData.highScore : domainData.lowScore;
+    
+    return {
+      title: domainData.title,
+      description: domainData.description,
+      interpretation
+    };
   };
 
   const getDomainColor = (domain: string) => {
@@ -102,7 +122,7 @@ const Results = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
@@ -172,34 +192,60 @@ const Results = () => {
         </div>
 
         {/* Detailed Results */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {Object.entries(scores).map(([domain, score]) => (
-            <Card key={domain} className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className={`text-xl ${getDomainColor(domain)} text-right`}>
-                  {domain === 'WAR' && 'WAR - אזור מלחמה'}
-                  {domain === 'OPPORTUNITY' && 'OPPORTUNITY - אזור הזדמנות'}
-                  {domain === 'COMFORT' && 'COMFORT - אזור נוחות'}
-                  {domain === 'APATHY' && 'APATHY - אזור אדישות'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-center">
-                  <div className={`text-4xl font-bold ${getDomainColor(domain)}`}>
-                    {score.toFixed(2)}
+        <div className="grid grid-cols-1 gap-6">
+          {Object.entries(scores).map(([domain, score]) => {
+            const interpretation = getDetailedInterpretation(domain, score);
+            return (
+              <Card key={domain} className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className={`text-2xl ${getDomainColor(domain)} text-right`}>
+                    {interpretation.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="text-center">
+                    <div className={`text-5xl font-bold ${getDomainColor(domain)} mb-2`}>
+                      {score.toFixed(2)}
+                    </div>
+                    <Progress 
+                      value={(score / 5) * 100} 
+                      className="h-4 mt-2"
+                    />
                   </div>
-                  <Progress 
-                    value={(score / 5) * 100} 
-                    className="h-3 mt-2"
-                  />
-                </div>
-                <p className="text-gray-700 text-right leading-relaxed">
-                  {getInterpretation(domain, score)}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+                  
+                  {/* General Description */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-bold text-gray-800 mb-2 text-right">הסבר כללי על התחום:</h4>
+                    <p className="text-gray-700 text-right leading-relaxed">
+                      {interpretation.description}
+                    </p>
+                  </div>
+                  
+                  {/* Personal Interpretation */}
+                  <div className="bg-blue-50 p-4 rounded-lg border-r-4 border-blue-500">
+                    <h4 className="font-bold text-blue-800 mb-2 text-right">הפרשנות האישית שלך:</h4>
+                    <p className="text-blue-700 text-right leading-relaxed">
+                      {interpretation.interpretation}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
+
+        {/* Key Insight */}
+        <Card className="shadow-xl border-0 bg-gradient-to-r from-green-50 to-blue-50 border-l-4 border-green-500">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-green-800 mb-4">תובנה מפתח</h3>
+              <p className="text-lg text-green-700 leading-relaxed">
+                רק ארגון עם ציון גבוה באזור <strong>Opportunity</strong> נמצא במצב אידיאלי ומיטבי, 
+                ומבטיח יכולת הסתגלות, צמיחה, והתמודדות מוצלחת עם אתגרי העתיד.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Action Buttons */}
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
