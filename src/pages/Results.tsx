@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-
 interface LocationState {
   scores: {
     WAR: number;
@@ -13,70 +12,55 @@ interface LocationState {
     APATHY: number;
   };
 }
-
 const Results = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as LocationState;
-
   useEffect(() => {
     if (!state?.scores) {
       navigate('/');
     }
   }, [state, navigate]);
-
   if (!state?.scores) {
     return null;
   }
-
-  const { scores } = state;
-
-  const chartData = [
-    {
-      domain: 'WAR\n(מלחמה)',
-      score: scores.WAR,
-      fill: '#ef4444'
-    },
-    {
-      domain: 'OPPORTUNITY\n(הזדמנות)',
-      score: scores.OPPORTUNITY,
-      fill: '#22c55e'
-    },
-    {
-      domain: 'COMFORT\n(נוחות)',
-      score: scores.COMFORT,
-      fill: '#eab308'
-    },
-    {
-      domain: 'APATHY\n(אדישות)',
-      score: scores.APATHY,
-      fill: '#6b7280'
-    }
-  ];
-
-  const radarData = [
-    {
-      domain: 'WAR',
-      score: scores.WAR,
-      fullMark: 5
-    },
-    {
-      domain: 'OPPORTUNITY',
-      score: scores.OPPORTUNITY,
-      fullMark: 5
-    },
-    {
-      domain: 'COMFORT',
-      score: scores.COMFORT,
-      fullMark: 5
-    },
-    {
-      domain: 'APATHY',
-      score: scores.APATHY,
-      fullMark: 5
-    }
-  ];
-
+  const {
+    scores
+  } = state;
+  const chartData = [{
+    domain: 'WAR\n(מלחמה)',
+    score: scores.WAR,
+    fill: '#ef4444'
+  }, {
+    domain: 'OPPORTUNITY\n(הזדמנות)',
+    score: scores.OPPORTUNITY,
+    fill: '#22c55e'
+  }, {
+    domain: 'COMFORT\n(נוחות)',
+    score: scores.COMFORT,
+    fill: '#eab308'
+  }, {
+    domain: 'APATHY\n(אדישות)',
+    score: scores.APATHY,
+    fill: '#6b7280'
+  }];
+  const radarData = [{
+    domain: 'WAR',
+    score: scores.WAR,
+    fullMark: 5
+  }, {
+    domain: 'OPPORTUNITY',
+    score: scores.OPPORTUNITY,
+    fullMark: 5
+  }, {
+    domain: 'COMFORT',
+    score: scores.COMFORT,
+    fullMark: 5
+  }, {
+    domain: 'APATHY',
+    score: scores.APATHY,
+    fullMark: 5
+  }];
   const getDetailedInterpretation = (domain: string, score: number) => {
     const interpretations = {
       WAR: {
@@ -104,29 +88,24 @@ const Results = () => {
         lowScore: "רמת מעורבות גבוהה של העובדים בארגון. תחושת מסוגלות חזקה, מוטיבציה גבוהה ויכולת טובה להתמודד עם אתגרים ולנצל הזדמנויות."
       }
     };
-    
     const domainData = interpretations[domain as keyof typeof interpretations];
     const interpretation = score >= 3.5 ? domainData.highScore : domainData.lowScore;
-    
     return {
       title: domainData.title,
       description: domainData.description,
       interpretation
     };
   };
-
   const getDomainColor = (domain: string) => {
     const colors = {
       WAR: "text-red-600",
-      OPPORTUNITY: "text-green-600", 
+      OPPORTUNITY: "text-green-600",
       COMFORT: "text-yellow-600",
       APATHY: "text-gray-600"
     };
     return colors[domain as keyof typeof colors];
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
+  return <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
@@ -149,16 +128,13 @@ const Results = () => {
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="domain" 
-                    tick={{ fontSize: 12 }}
-                    interval={0}
-                  />
+                  <XAxis dataKey="domain" tick={{
+                  fontSize: 12
+                }} interval={0} />
                   <YAxis domain={[0, 5]} />
-                  <Tooltip 
-                    formatter={(value: number) => [value.toFixed(2), 'ציון']}
-                    labelStyle={{ textAlign: 'right' }}
-                  />
+                  <Tooltip formatter={(value: number) => [value.toFixed(2), 'ציון']} labelStyle={{
+                  textAlign: 'right'
+                }} />
                   <Bar dataKey="score" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -174,20 +150,13 @@ const Results = () => {
               <ResponsiveContainer width="100%" height={300}>
                 <RadarChart data={radarData}>
                   <PolarGrid />
-                  <PolarAngleAxis dataKey="domain" tick={{ fontSize: 12 }} />
-                  <PolarRadiusAxis 
-                    angle={90} 
-                    domain={[0, 5]} 
-                    tick={{ fontSize: 10 }}
-                  />
-                  <Radar
-                    name="ציון"
-                    dataKey="score"
-                    stroke="#3b82f6"
-                    fill="#3b82f6"
-                    fillOpacity={0.3}
-                    strokeWidth={2}
-                  />
+                  <PolarAngleAxis dataKey="domain" tick={{
+                  fontSize: 12
+                }} />
+                  <PolarRadiusAxis angle={90} domain={[0, 5]} tick={{
+                  fontSize: 10
+                }} />
+                  <Radar name="ציון" dataKey="score" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} strokeWidth={2} />
                   <Tooltip formatter={(value: number) => [value.toFixed(2), 'ציון']} />
                 </RadarChart>
               </ResponsiveContainer>
@@ -198,9 +167,8 @@ const Results = () => {
         {/* Detailed Results */}
         <div className="grid grid-cols-1 gap-6">
           {Object.entries(scores).map(([domain, score]) => {
-            const interpretation = getDetailedInterpretation(domain, score);
-            return (
-              <Card key={domain} className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          const interpretation = getDetailedInterpretation(domain, score);
+          return <Card key={domain} className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className={`text-2xl ${getDomainColor(domain)} text-right`}>
                     {interpretation.title}
@@ -211,10 +179,7 @@ const Results = () => {
                     <div className={`text-5xl font-bold ${getDomainColor(domain)} mb-2`}>
                       {score.toFixed(2)}
                     </div>
-                    <Progress 
-                      value={(score / 5) * 100} 
-                      className="h-4 mt-2"
-                    />
+                    <Progress value={score / 5 * 100} className="h-4 mt-2" />
                   </div>
                   
                   {/* General Description */}
@@ -233,16 +198,15 @@ const Results = () => {
                     </p>
                   </div>
                 </CardContent>
-              </Card>
-            );
-          })}
+              </Card>;
+        })}
         </div>
 
         {/* Key Insight */}
         <Card className="shadow-xl border-0 bg-gradient-to-r from-green-50 to-blue-50 border-l-4 border-green-500">
           <CardContent className="pt-6">
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-green-800 mb-4">תובנה מפתח</h3>
+              <h3 className="text-2xl font-bold text-green-800 mb-4">תובנת מפתח</h3>
               <p className="text-lg text-green-700 leading-relaxed">
                 רק ארגון עם ציון גבוה באזור <strong>Opportunity</strong> נמצא במצב אידיאלי ומיטבי, 
                 ומבטיח יכולת הסתגלות, צמיחה, והתמודדות מוצלחת עם אתגרי העתיד.
@@ -254,17 +218,10 @@ const Results = () => {
         {/* Action Buttons */}
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
           <CardContent className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-            <Button 
-              onClick={() => navigate('/')}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg"
-            >
+            <Button onClick={() => navigate('/')} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg">
               מלא שאלון חדש
             </Button>
-            <Button 
-              onClick={() => window.print()}
-              variant="outline"
-              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-3 text-lg"
-            >
+            <Button onClick={() => window.print()} variant="outline" className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-3 text-lg">
               הדפס תוצאות
             </Button>
           </CardContent>
@@ -301,8 +258,6 @@ const Results = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Results;
