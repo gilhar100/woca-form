@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface LocationState {
   personalDetails: {
@@ -67,11 +69,45 @@ const Questionnaire = () => {
   const state = location.state as LocationState;
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [showConsentDialog, setShowConsentDialog] = useState(true);
+  const [hasConsented, setHasConsented] = useState(false);
 
   if (!state?.personalDetails) {
     navigate('/personal-details');
     return null;
   }
+
+  const handleConsentAccept = () => {
+    setHasConsented(true);
+    setShowConsentDialog(false);
+  };
+
+  const handleConsentDecline = () => {
+    navigate('/');
+  };
+
+  const calculateScores = (answers: Record<number, number>) => {
+    // WAR questions: 1, 5, 9, 13, 17, 21, 25, 29, 33, 37
+    const warQuestions = [0, 4, 8, 12, 16, 20, 24, 28, 32, 36];
+    // OPPORTUNITY questions: 2, 6, 10, 14, 18, 22, 26, 30, 34, 38
+    const opportunityQuestions = [1, 5, 9, 13, 17, 21, 25, 29, 33, 37];
+    // COMFORT questions: 3, 7, 11, 15, 19, 23, 27, 31, 35, 39
+    const comfortQuestions = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38];
+    // APATHY questions: 4, 8, 12, 16, 20, 24, 28, 32, 36, 40
+    const apathyQuestions = [3, 7, 11, 15, 19, 23, 27, 31, 35, 39];
+
+    const calculateDomainScore = (questionIndices: number[]) => {
+      const scores = questionIndices.map(index => answers[index] || 0);
+      return scores.reduce((sum, score) => sum + score, 0) / scores.length;
+    };
+
+    return {
+      WAR: calculateDomainScore(warQuestions),
+      OPPORTUNITY: calculateDomainScore(opportunityQuestions),
+      COMFORT: calculateDomainScore(comfortQuestions),
+      APATHY: calculateDomainScore(apathyQuestions),
+    };
+  };
 
   const handleAnswerChange = (value: number) => {
     setAnswers(prevAnswers => ({
@@ -84,10 +120,11 @@ const Questionnaire = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      // מעבר לחלונית אישור עם כל הנתונים
-      navigate('/consent', {
+      // Calculate scores and navigate directly to results
+      const scores = calculateScores(answers);
+      navigate('/results', {
         state: {
-          answers,
+          scores,
           personalDetails: state.personalDetails
         }
       });
@@ -102,6 +139,56 @@ const Questionnaire = () => {
 
   const currentAnswer = answers[currentQuestion];
   const isAnswered = currentAnswer !== undefined;
+
+  // Show consent dialog if user hasn't consented yet
+  if (!hasConsented) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-2 sm:p-4 flex items-center justify-center" dir="rtl">
+        <Card className="w-full max-w-2xl shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
+          <CardHeader className="text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <CardTitle className="text-2xl sm:text-3xl font-bold">
+              הסכמה לשימוש בנתונים
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 sm:p-8 space-y-6">
+            <div className="text-center space-y-4">
+              <p className="text-lg font-semibold text-gray-800">
+                שלום {state.personalDetails.fullName},
+              </p>
+              <p className="text-gray-700 leading-relaxed">
+                כדי להמשיך במילוי השאלון, אנו מבקשים את הסכמתך לשימוש בנתונים שתספק לצורך שיפור הכלי.
+              </p>
+              <div className="bg-blue-50 p-4 rounded-lg border-r-4 border-blue-500 text-right">
+                <h4 className="font-bold text-blue-800 mb-2">חשוב לדעת:</h4>
+                <ul className="text-blue-700 space-y-1 text-sm">
+                  <li>• הנתונים נשמרים באופן אנונימי לחלוטין</li>
+                  <li>• המידע משמש אך ורק לשיפור הכלי ופיתוחו</li>
+                  <li>• לא נעשה שימוש במידע לצרכים מסחריים</li>
+                  <li>• ללא הסכמה לא ניתן יהיה למלא את השאלון</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+              <Button 
+                onClick={handleConsentAccept}
+                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-8 py-3 text-lg font-semibold"
+              >
+                ✓ אני מסכים/ה והמשך לשאלון
+              </Button>
+              <Button 
+                onClick={handleConsentDecline}
+                variant="outline"
+                className="border-2 border-red-500 text-red-600 hover:bg-red-50 px-8 py-3 text-lg font-semibold"
+              >
+                ✗ איני מסכים/ה
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-2 sm:p-4" dir="rtl">
