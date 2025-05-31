@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -329,7 +328,6 @@ const Questionnaire = () => {
       };
 
       console.log('Attempting to insert data:', insertData);
-      console.log('Supabase client URL:', supabase.supabaseUrl);
       
       const { data, error } = await supabase
         .from('woca_responses')
