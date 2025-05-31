@@ -24,6 +24,7 @@ export type Database = {
           overall_score: number
           phone: string | null
           profession: string | null
+          question_responses: Json
           scores: Json
           workshop_id: number
         }
@@ -41,6 +42,7 @@ export type Database = {
           overall_score: number
           phone?: string | null
           profession?: string | null
+          question_responses?: Json
           scores: Json
           workshop_id?: number
         }
@@ -58,6 +60,7 @@ export type Database = {
           overall_score?: number
           phone?: string | null
           profession?: string | null
+          question_responses?: Json
           scores?: Json
           workshop_id?: number
         }
