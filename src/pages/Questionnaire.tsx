@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { v4 as uuidv4 } from 'uuid';
 
 const questions = [
   {
@@ -315,12 +315,13 @@ const Questionnaire = () => {
       const { error } = await supabase
         .from('woca_responses')
         .insert({
+          id: uuidv4(),
           full_name: personalDetails?.fullName || '',
           education: personalDetails?.education || null,
           profession: personalDetails?.profession || null,
           organization: personalDetails?.organization || null,
           experience_years: personalDetails?.experienceYears || null,
-          email: personalDetails?.email || null,
+          email: personalDetails?.email || '',
           phone: personalDetails?.phone || null,
           scores: scores,
           overall_score: overallScore,
