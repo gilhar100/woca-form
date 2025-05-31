@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -312,33 +313,51 @@ const Questionnaire = () => {
         }
       });
       
-      const { error } = await supabase
+      // Prepare data for insertion
+      const insertData = {
+        id: uuidv4(),
+        full_name: personalDetails?.fullName || '',
+        education: personalDetails?.education || null,
+        profession: personalDetails?.profession || null,
+        organization: personalDetails?.organization || null,
+        experience_years: personalDetails?.experienceYears || null,
+        email: personalDetails?.email || '',
+        phone: personalDetails?.phone || null,
+        scores: scores,
+        overall_score: overallScore,
+        question_responses: questionResponses,
+      };
+
+      console.log('Attempting to insert data:', insertData);
+      console.log('Supabase client URL:', supabase.supabaseUrl);
+      
+      const { data, error } = await supabase
         .from('woca_responses')
-        .insert({
-          id: uuidv4(),
-          full_name: personalDetails?.fullName || '',
-          education: personalDetails?.education || null,
-          profession: personalDetails?.profession || null,
-          organization: personalDetails?.organization || null,
-          experience_years: personalDetails?.experienceYears || null,
-          email: personalDetails?.email || '',
-          phone: personalDetails?.phone || null,
-          scores: scores,
-          overall_score: overallScore,
-          question_responses: questionResponses,
-        });
+        .insert(insertData);
 
       if (error) {
-        console.error('Error saving data:', error);
+        console.error('Supabase error details:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        console.error('Error details:', error.details);
+        console.error('Error hint:', error.hint);
+        
         toast({
-          title: "שגיאה",
-          description: "אירעה שגיאה בשמירת הנתונים. נא לנסות שוב.",
+          title: "שגיאה בשמירת הנתונים",
+          description: `שגיאה: ${error.message}. קוד שגיאה: ${error.code}`,
           variant: "destructive",
         });
         return;
       }
 
-      console.log('Data saved successfully');
+      console.log('Data saved successfully:', data);
+      
+      toast({
+        title: "הנתונים נשמרו בהצלחה",
+        description: "התשובות שלך נשמרו במערכת",
+        variant: "default",
+      });
+
       navigate('/results', {
         state: {
           scores,
@@ -348,10 +367,10 @@ const Questionnaire = () => {
         }
       });
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Unexpected error:', error);
       toast({
-        title: "שגיאה",
-        description: "אירעה שגיאה לא צפויה. נא לנסות שוב.",
+        title: "שגיאה לא צפויה",
+        description: "אירעה שגיאה לא צפויה. נא לבדוק את החיבור לאינטרנט ולנסות שוב.",
         variant: "destructive",
       });
     } finally {
