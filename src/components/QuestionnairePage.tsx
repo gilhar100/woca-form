@@ -47,126 +47,109 @@ const QuestionnairePage = ({
     4: 'לעיתים קרובות', 
     3: 'לפעמים',
     2: 'לעיתים רחוקות',
-    1: 'כלל לא נכון'
+    1: 'אף פעם'
   };
 
   const allQuestionsAnswered = questions.every(q => answers[q.id] !== undefined);
 
   return (
-    <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
-      <CardContent className="p-8 space-y-8" dir="rtl">
-        <div className="text-center space-y-4">
-          <div className="text-sm text-gray-500 font-medium" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-            עמוד {pageNumber} מתוך {totalPages}
+    <div className="max-w-5xl mx-auto">
+      <Card className="shadow-lg border-0 bg-white">
+        <CardContent className="p-8 space-y-8" dir="rtl">
+          <div className="text-center space-y-4">
+            <div className="text-sm text-gray-500 font-medium" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+              עמוד {pageNumber} מתוך {totalPages}
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-8" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+              דרגו עד כמה אתה מסכים/ה עם הנידגים הבאים:
+            </h2>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-            שאלון להערכת תרבות ארגונית
-          </h2>
-        </div>
 
-        <div className="text-center text-sm text-gray-600 bg-blue-50 p-4 rounded-xl border border-blue-100">
-          <p className="font-semibold mb-2 text-blue-800" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>דרגו לפי הסולם:</p>
-          <div className="grid grid-cols-5 gap-2 text-center" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-            <div className="text-xs">
-              <div className="font-bold text-blue-600">5</div>
-              <div>נכון מאוד</div>
-            </div>
-            <div className="text-xs">
-              <div className="font-bold text-blue-600">4</div>
-              <div>לעיתים קרובות</div>
-            </div>
-            <div className="text-xs">
-              <div className="font-bold text-blue-600">3</div>
-              <div>לפעמים</div>
-            </div>
-            <div className="text-xs">
-              <div className="font-bold text-blue-600">2</div>
-              <div>לעיתים רחוקות</div>
-            </div>
-            <div className="text-xs">
-              <div className="font-bold text-blue-600">1</div>
-              <div>כלל לא נכון</div>
-            </div>
-          </div>
-        </div>
+          {showValidation && !allQuestionsAnswered && (
+            <Alert className="border-red-200 bg-red-50">
+              <AlertDescription className="text-red-700 text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                אנא השב על כל השאלות בעמוד זה לפני המעבר לעמוד הבא
+              </AlertDescription>
+            </Alert>
+          )}
 
-        {showValidation && !allQuestionsAnswered && (
-          <Alert className="border-red-200 bg-red-50">
-            <AlertDescription className="text-red-700 text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-              אנא השב על כל השאלות בעמוד זה לפני המעבר לעמוד הבא
-            </AlertDescription>
-          </Alert>
-        )}
-
-        <div className="space-y-6">
-          {questions.map((question, index) => (
-            <div key={question.id} className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-800 text-right leading-relaxed" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                  {index + 1}. {question.text}
-                </h3>
-              </div>
-              
-              <RadioGroup 
-                value={answers[question.id]?.toString() || ''} 
-                onValueChange={(value) => handleAnswerChange(question.id, value)}
-                className="flex flex-row-reverse justify-center gap-4"
-                dir="rtl"
-              >
-                {[5, 4, 3, 2, 1].map((value) => (
-                  <div 
-                    key={value}
-                    className={`flex flex-col items-center p-3 rounded-full border-2 transition-all duration-200 cursor-pointer hover:bg-blue-50 hover:border-blue-200 w-20 h-20 ${
-                      answers[question.id] === value 
-                        ? 'bg-blue-100 border-blue-400 shadow-md' 
-                        : 'bg-white border-gray-200'
-                    }`}
-                    onClick={() => handleAnswerChange(question.id, value.toString())}
-                  >
-                    <RadioGroupItem 
-                      value={value.toString()} 
-                      id={`q${question.id}_r${value}`} 
-                      className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 mb-1"
-                    />
-                    <Label 
-                      htmlFor={`q${question.id}_r${value}`} 
-                      className="cursor-pointer text-center text-sm font-medium flex flex-col items-center"
-                      style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-                    >
-                      <div className="font-bold text-blue-600 text-base mb-0.5">{value}</div>
-                      <div className="text-xs text-gray-600 leading-tight">{scaleLabels[value as keyof typeof scaleLabels]}</div>
-                    </Label>
+          <div className="space-y-12">
+            {questions.map((question, index) => (
+              <div key={question.id} className="space-y-6">
+                <div className="flex items-start gap-4" dir="rtl">
+                  <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    {index + 1}
                   </div>
-                ))}
-              </RadioGroup>
-            </div>
-          ))}
-        </div>
+                  <h3 className="text-lg font-medium text-gray-800 text-right leading-relaxed flex-1" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                    {question.text}
+                  </h3>
+                </div>
+                
+                <RadioGroup 
+                  value={answers[question.id]?.toString() || ''} 
+                  onValueChange={(value) => handleAnswerChange(question.id, value)}
+                  className="flex justify-center gap-8 mt-6"
+                  dir="rtl"
+                >
+                  {[5, 4, 3, 2, 1].map((value) => (
+                    <div 
+                      key={value}
+                      className="flex flex-col items-center cursor-pointer"
+                      onClick={() => handleAnswerChange(question.id, value.toString())}
+                    >
+                      <div 
+                        className={`w-12 h-12 rounded-full border-2 flex items-center justify-center mb-2 transition-all duration-200 ${
+                          answers[question.id] === value 
+                            ? 'bg-blue-500 border-blue-500 text-white' 
+                            : 'bg-white border-gray-300 text-gray-600 hover:border-blue-300'
+                        }`}
+                      >
+                        <RadioGroupItem 
+                          value={value.toString()} 
+                          id={`q${question.id}_r${value}`} 
+                          className="sr-only"
+                        />
+                        <span className="font-bold text-sm">{value}</span>
+                      </div>
+                      <Label 
+                        htmlFor={`q${question.id}_r${value}`} 
+                        className="cursor-pointer text-center text-xs text-gray-600 max-w-[80px] leading-tight"
+                        style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                      >
+                        {scaleLabels[value as keyof typeof scaleLabels]}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+            ))}
+          </div>
 
-        <div className="flex justify-between items-center pt-6 border-t border-gray-100">
-          <Button
-            onClick={onNext}
-            disabled={!allQuestionsAnswered}
-            className="h-12 px-8 font-semibold bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
-            style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-          >
-            {pageNumber === totalPages ? 'סיים שאלון' : 'עמוד הבא'}
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-          
-          <Button
-            variant="outline"
-            onClick={onBack}
-            disabled={!canGoBack}
-            className="h-12 px-6 font-semibold text-gray-700 border-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-          >
-            <ChevronLeft className="w-4 h-4" />
-            חזור
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="flex justify-between items-center pt-8 border-t border-gray-200">
+            <Button
+              onClick={onNext}
+              disabled={!allQuestionsAnswered}
+              className="h-12 px-8 font-semibold bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
+              style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+            >
+              {pageNumber === totalPages ? 'סיים שאלון' : 'עמוד הבא'}
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+            
+            <Button
+              variant="outline"
+              onClick={onBack}
+              disabled={!canGoBack}
+              className="h-12 px-6 font-semibold text-gray-700 border-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              חזור
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
