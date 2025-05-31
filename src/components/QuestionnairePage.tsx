@@ -116,7 +116,7 @@ const QuestionnairePage = ({
                 {[5, 4, 3, 2, 1].map((value) => (
                   <div 
                     key={value}
-                    className={`flex flex-col items-center p-3 rounded-lg border-2 transition-all duration-200 cursor-pointer hover:bg-blue-50 hover:border-blue-200 min-w-[80px] ${
+                    className={`flex flex-col items-center p-3 rounded-full border-2 transition-all duration-200 cursor-pointer hover:bg-blue-50 hover:border-blue-200 w-20 h-20 ${
                       answers[question.id] === value 
                         ? 'bg-blue-100 border-blue-400 shadow-md' 
                         : 'bg-white border-gray-200'
@@ -126,15 +126,15 @@ const QuestionnairePage = ({
                     <RadioGroupItem 
                       value={value.toString()} 
                       id={`q${question.id}_r${value}`} 
-                      className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 mb-2"
+                      className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 mb-1"
                     />
                     <Label 
                       htmlFor={`q${question.id}_r${value}`} 
-                      className="cursor-pointer text-center text-sm font-medium"
+                      className="cursor-pointer text-center text-sm font-medium flex flex-col items-center"
                       style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                     >
-                      <div className="font-bold text-blue-600 text-lg mb-1">{value}</div>
-                      <div className="text-xs text-gray-600">{scaleLabels[value as keyof typeof scaleLabels]}</div>
+                      <div className="font-bold text-blue-600 text-base mb-0.5">{value}</div>
+                      <div className="text-xs text-gray-600 leading-tight">{scaleLabels[value as keyof typeof scaleLabels]}</div>
                     </Label>
                   </div>
                 ))}
