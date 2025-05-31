@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,9 +6,6 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -106,10 +104,6 @@ const Questionnaire = () => {
   
   const personalDetails = location.state?.personalDetails as PersonalDetails | undefined;
   
-  const [workshopId, setWorkshopId] = useState('');
-  const [showWorkshopIdForm, setShowWorkshopIdForm] = useState(true);
-  const [showConsentDialog, setShowConsentDialog] = useState(false);
-  const [consentGiven, setConsentGiven] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -119,31 +113,6 @@ const Questionnaire = () => {
       navigate('/personal-details');
     }
   }, [personalDetails, navigate]);
-
-  const handleWorkshopIdSubmit = () => {
-    if (!workshopId.trim()) {
-      toast({
-        title: "שדה חובה",
-        description: "נא להזין Workshop ID",
-        variant: "destructive",
-      });
-      return;
-    }
-    setShowWorkshopIdForm(false);
-    setShowConsentDialog(true);
-  };
-
-  const handleConsentSubmit = () => {
-    if (!consentGiven) {
-      toast({
-        title: "נדרש אישור",
-        description: "נא לאשר את השימוש בנתונים כדי להמשיך",
-        variant: "destructive",
-      });
-      return;
-    }
-    setShowConsentDialog(false);
-  };
 
   const handleAnswer = (questionId: number, value: number) => {
     setAnswers(prevAnswers => ({
@@ -195,7 +164,6 @@ const Questionnaire = () => {
       const { error } = await supabase
         .from('woca_responses')
         .insert({
-          workshop_id: parseInt(workshopId),
           full_name: personalDetails?.fullName || '',
           education: personalDetails?.education || null,
           profession: personalDetails?.profession || null,
@@ -205,7 +173,6 @@ const Questionnaire = () => {
           phone: personalDetails?.phone || null,
           scores: scores,
           overall_score: overallScore,
-          consent_research: consentGiven
         });
 
       if (error) {
@@ -244,154 +211,82 @@ const Questionnaire = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-2 sm:p-4" dir="rtl">
       <div className="max-w-2xl mx-auto">
-        {/* Workshop ID Form */}
-        <Dialog open={showWorkshopIdForm} onOpenChange={() => {}}>
-          <DialogContent className="sm:max-w-md" dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="text-center text-xl font-bold">
-                הזנת Workshop ID
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <p className="text-center text-gray-600">
-                נא להזין את ה-Workshop ID שקיבלת מהמנחה
+        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              שאלון
+            </CardTitle>
+            <p className="text-gray-600 mt-2">
+              ענה על השאלות הבאות בכנות
+            </p>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            <Progress value={progress} className="h-2" />
+
+            <div className="space-y-2">
+              <p className="text-lg font-semibold">
+                {questions[currentQuestionIndex].text}
               </p>
-              <div className="space-y-2">
-                <Label htmlFor="workshopId">Workshop ID</Label>
-                <Input
-                  id="workshopId"
-                  value={workshopId}
-                  onChange={(e) => setWorkshopId(e.target.value)}
-                  placeholder="הזן Workshop ID"
-                  className="text-center"
-                />
-              </div>
-              <p className="text-sm text-gray-500 text-center">
-                אם אינך יודע מה ה-"Workshop ID", פנה אל המנחה שלך
-              </p>
-              <Button 
-                onClick={handleWorkshopIdSubmit}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              <RadioGroup defaultValue={answers[questions[currentQuestionIndex].id]?.toString()} onValueChange={(value) => handleAnswer(questions[currentQuestionIndex].id, parseInt(value))} className="flex flex-col space-y-1">
+                <div className="flex items-center space-x-2 space-x-reverse">
+                  <RadioGroupItem value="1" id="r1" />
+                  <Label htmlFor="r1">1 - לא מסכים כלל</Label>
+                </div>
+                <div className="flex items-center space-x-2 space-x-reverse">
+                  <RadioGroupItem value="2" id="r2" />
+                  <Label htmlFor="r2">2 - לא מסכים</Label>
+                </div>
+                <div className="flex items-center space-x-2 space-x-reverse">
+                  <RadioGroupItem value="3" id="r3" />
+                  <Label htmlFor="r3">3 - נייטרלי</Label>
+                </div>
+                <div className="flex items-center space-x-2 space-x-reverse">
+                  <RadioGroupItem value="4" id="r4" />
+                  <Label htmlFor="r4">4 - מסכים</Label>
+                </div>
+                <div className="flex items-center space-x-2 space-x-reverse">
+                  <RadioGroupItem value="5" id="r5" />
+                  <Label htmlFor="r5">5 - מסכים מאוד</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="flex justify-between">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  if (currentQuestionIndex > 0) {
+                    setCurrentQuestionIndex(currentQuestionIndex - 1);
+                  }
+                }}
+                disabled={currentQuestionIndex === 0}
               >
-                המשך
+                הקודם
+              </Button>
+              <Button
+                onClick={() => {
+                  if (answers[questions[currentQuestionIndex].id] === undefined) {
+                    toast({
+                      title: "תשובה נדרשת",
+                      description: "נא לענות על השאלה לפני שממשיכים",
+                      variant: "destructive",
+                    });
+                    return;
+                  }
+                  if (currentQuestionIndex < questions.length - 1) {
+                    setCurrentQuestionIndex(currentQuestionIndex + 1);
+                  } else {
+                    handleSubmit();
+                  }
+                }}
+                disabled={isSubmitting}
+              >
+                {currentQuestionIndex === questions.length - 1 ? "סיום" : "הבא"}
               </Button>
             </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Consent Dialog */}
-        <Dialog open={showConsentDialog} onOpenChange={() => {}}>
-          <DialogContent className="sm:max-w-md" dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="text-center text-xl font-bold">
-                אישור שימוש בנתונים
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <p className="text-sm text-gray-600">
-                כדי לשפר את הכלי ולקדם את המחקר, אנו מבקשים את הסכמתך לשימוש בנתונים שתספק.
-                הנתונים יישמרו באופן אנונימי ולא יועברו לגורמים חיצוניים.
-              </p>
-              <div className="flex items-center space-x-2 space-x-reverse">
-                <Checkbox
-                  id="consent"
-                  checked={consentGiven}
-                  onCheckedChange={(checked) => setConsentGiven(checked as boolean)}
-                />
-                <Label htmlFor="consent" className="text-sm">
-                  אני מסכים/ה לשימוש בנתונים לצורך שיפור הכלי ומחקר
-                </Label>
-              </div>
-              <Button 
-                onClick={handleConsentSubmit}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                disabled={!consentGiven}
-              >
-                המשך לשאלון
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Main Questionnaire */}
-        {!showWorkshopIdForm && !showConsentDialog && (
-          <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-            <CardHeader className="text-center">
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                שאלון
-              </CardTitle>
-              <p className="text-gray-600 mt-2">
-                ענה על השאלות הבאות בכנות
-              </p>
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-              <Progress value={progress} className="h-2" />
-
-              <div className="space-y-2">
-                <p className="text-lg font-semibold">
-                  {questions[currentQuestionIndex].text}
-                </p>
-                <RadioGroup defaultValue={answers[questions[currentQuestionIndex].id]?.toString()} onValueChange={(value) => handleAnswer(questions[currentQuestionIndex].id, parseInt(value))} className="flex flex-col space-y-1">
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <RadioGroupItem value="1" id="r1" />
-                    <Label htmlFor="r1">1 - לא מסכים כלל</Label>
-                  </div>
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <RadioGroupItem value="2" id="r2" />
-                    <Label htmlFor="r2">2 - לא מסכים</Label>
-                  </div>
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <RadioGroupItem value="3" id="r3" />
-                    <Label htmlFor="r3">3 - נייטרלי</Label>
-                  </div>
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <RadioGroupItem value="4" id="r4" />
-                    <Label htmlFor="r4">4 - מסכים</Label>
-                  </div>
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <RadioGroupItem value="5" id="r5" />
-                    <Label htmlFor="r5">5 - מסכים מאוד</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <div className="flex justify-between">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    if (currentQuestionIndex > 0) {
-                      setCurrentQuestionIndex(currentQuestionIndex - 1);
-                    }
-                  }}
-                  disabled={currentQuestionIndex === 0}
-                >
-                  הקודם
-                </Button>
-                <Button
-                  onClick={() => {
-                    if (answers[questions[currentQuestionIndex].id] === undefined) {
-                      toast({
-                        title: "תשובה נדרשת",
-                        description: "נא לענות על השאלה לפני שממשיכים",
-                        variant: "destructive",
-                      });
-                      return;
-                    }
-                    if (currentQuestionIndex < questions.length - 1) {
-                      setCurrentQuestionIndex(currentQuestionIndex + 1);
-                    } else {
-                      handleSubmit();
-                    }
-                  }}
-                  disabled={isSubmitting}
-                >
-                  {currentQuestionIndex === questions.length - 1 ? "סיום" : "הבא"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
