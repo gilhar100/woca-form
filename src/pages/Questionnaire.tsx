@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from 'uuid';
+import GroupIdForm from '@/components/GroupIdForm';
+import QuestionCard from '@/components/QuestionCard';
 
 const questions = [
   {
@@ -245,6 +243,8 @@ const Questionnaire = () => {
   
   const personalDetails = location.state?.personalDetails as PersonalDetails | undefined;
   
+  const [groupId, setGroupId] = useState<string>('');
+  const [showGroupIdForm, setShowGroupIdForm] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -255,11 +255,31 @@ const Questionnaire = () => {
     }
   }, [personalDetails, navigate]);
 
+  const handleGroupIdSubmit = (id: string) => {
+    setGroupId(id);
+    setShowGroupIdForm(false);
+  };
+
   const handleAnswer = (questionId: number, value: number) => {
     setAnswers(prevAnswers => ({
       ...prevAnswers,
       [questionId]: value,
     }));
+    
+    // Auto-advance to next question after a short delay
+    setTimeout(() => {
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      } else {
+        handleSubmit();
+      }
+    }, 300);
+  };
+
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
   };
 
   const calculateScores = () => {
@@ -312,7 +332,7 @@ const Questionnaire = () => {
         }
       });
       
-      // Prepare data for insertion
+      // Prepare data for insertion including group_id
       const insertData = {
         id: uuidv4(),
         full_name: personalDetails?.fullName || '',
@@ -322,6 +342,7 @@ const Questionnaire = () => {
         experience_years: personalDetails?.experienceYears || null,
         email: personalDetails?.email || '',
         phone: personalDetails?.phone || null,
+        group_id: groupId,
         scores: scores,
         overall_score: overallScore,
         question_responses: questionResponses,
@@ -361,7 +382,8 @@ const Questionnaire = () => {
           scores,
           overallScore,
           personalDetails,
-          answers
+          answers,
+          groupId
         }
       });
     } catch (error) {
@@ -378,96 +400,51 @@ const Questionnaire = () => {
 
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
+  if (showGroupIdForm) {
+    return <GroupIdForm onSubmit={handleGroupIdSubmit} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-2 sm:p-4" dir="rtl">
       <div className="max-w-2xl mx-auto">
-        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              שאלון להערכת תרבות ארגונית לפי מודל SALIMA
-            </CardTitle>
-            <p className="text-gray-600 mt-2">
-              דרג/י כל היגד לפי הסולם:
-            </p>
-            <p className="text-sm text-gray-500">
-              1 = כלל לא נכון | 2 = לעיתים רחוקות | 3 = לפעמים | 4 = לעיתים קרובות | 5 = נכון מאוד
-            </p>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            <Progress value={progress} className="h-2" />
-            
-            <div className="text-center text-sm text-gray-500">
-              שאלה {currentQuestionIndex + 1} מתוך {questions.length}
+        {/* Header with progress */}
+        <div className="mb-4 sm:mb-6">
+          <div className="text-center mb-4">
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              שאלון SALIMA
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">קבוצה: {groupId}</p>
+          </div>
+          
+          <div className="space-y-2">
+            <Progress value={progress} className="h-3" />
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>שאלה {currentQuestionIndex + 1} מתוך {questions.length}</span>
+              <span>{Math.round(progress)}% הושלם</span>
             </div>
+          </div>
+        </div>
 
-            <div className="space-y-4">
-              <p className="text-lg font-semibold">
-                {questions[currentQuestionIndex].text}
-              </p>
-              <RadioGroup 
-                value={answers[questions[currentQuestionIndex].id]?.toString()} 
-                onValueChange={(value) => handleAnswer(questions[currentQuestionIndex].id, parseInt(value))} 
-                className="flex flex-col space-y-3"
-              >
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <RadioGroupItem value="1" id="r1" />
-                  <Label htmlFor="r1">1 - כלל לא נכון</Label>
-                </div>
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <RadioGroupItem value="2" id="r2" />
-                  <Label htmlFor="r2">2 - לעיתים רחוקות</Label>
-                </div>
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <RadioGroupItem value="3" id="r3" />
-                  <Label htmlFor="r3">3 - לפעמים</Label>
-                </div>
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <RadioGroupItem value="4" id="r4" />
-                  <Label htmlFor="r4">4 - לעיתים קרובות</Label>
-                </div>
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <RadioGroupItem value="5" id="r5" />
-                  <Label htmlFor="r5">5 - נכון מאוד</Label>
-                </div>
-              </RadioGroup>
-            </div>
+        {/* Question Card */}
+        <QuestionCard
+          question={questions[currentQuestionIndex]}
+          currentAnswer={answers[questions[currentQuestionIndex].id]}
+          onAnswer={(value) => handleAnswer(questions[currentQuestionIndex].id, value)}
+          onBack={handleBack}
+          canGoBack={currentQuestionIndex > 0}
+          questionNumber={currentQuestionIndex + 1}
+          totalQuestions={questions.length}
+        />
 
-            <div className="flex justify-between">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (currentQuestionIndex > 0) {
-                    setCurrentQuestionIndex(currentQuestionIndex - 1);
-                  }
-                }}
-                disabled={currentQuestionIndex === 0}
-              >
-                הקודם
-              </Button>
-              <Button
-                onClick={() => {
-                  if (answers[questions[currentQuestionIndex].id] === undefined) {
-                    toast({
-                      title: "תשובה נדרשת",
-                      description: "נא לענות על השאלה לפני שממשיכים",
-                      variant: "destructive",
-                    });
-                    return;
-                  }
-                  if (currentQuestionIndex < questions.length - 1) {
-                    setCurrentQuestionIndex(currentQuestionIndex + 1);
-                  } else {
-                    handleSubmit();
-                  }
-                }}
-                disabled={isSubmitting}
-              >
-                {currentQuestionIndex === questions.length - 1 ? "סיום" : "הבא"}
-              </Button>
+        {/* Loading overlay for submission */}
+        {isSubmitting && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p>שומר תשובות...</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        )}
       </div>
     </div>
   );
