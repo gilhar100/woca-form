@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 interface Question {
   id: number;
@@ -38,33 +38,33 @@ const QuestionCard = ({
   };
 
   const scaleLabels = {
-    1: 'כלל לא נכון',
-    2: 'לעיתים רחוקות',
+    5: 'נכון מאוד',
+    4: 'לעיתים קרובות', 
     3: 'לפעמים',
-    4: 'לעיתים קרובות',
-    5: 'נכון מאוד'
+    2: 'לעיתים רחוקות',
+    1: 'כלל לא נכון'
   };
 
   return (
     <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
       <CardContent className="p-8 space-y-8" dir="rtl">
         <div className="text-center space-y-4">
-          <div className="text-sm text-gray-500 font-medium">
+          <div className="text-sm text-gray-500 font-medium" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
             שאלה {questionNumber} מתוך {totalQuestions}
           </div>
-          <h2 className="text-xl font-bold leading-relaxed text-gray-800 px-4">
+          <h2 className="text-xl font-bold leading-relaxed text-gray-800 px-4 text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
             {question.text}
           </h2>
         </div>
 
         <div className="text-center text-sm text-gray-600 bg-blue-50 p-4 rounded-xl border border-blue-100">
-          <p className="font-semibold mb-2 text-blue-800">דרגו לפי הסולם:</p>
-          <div className="space-y-1">
-            <p>1 = כלל לא נכון</p>
-            <p>2 = לעיתים רחוקות</p>
-            <p>3 = לפעמים</p>
-            <p>4 = לעיתים קרובות</p>
+          <p className="font-semibold mb-2 text-blue-800" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>דרגו לפי הסולם:</p>
+          <div className="space-y-1 text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
             <p>5 = נכון מאוד</p>
+            <p>4 = לעיתים קרובות</p>
+            <p>3 = לפעמים</p>
+            <p>2 = לעיתים רחוקות</p>
+            <p>1 = כלל לא נכון</p>
           </div>
         </div>
 
@@ -72,8 +72,9 @@ const QuestionCard = ({
           value={currentAnswer?.toString()} 
           onValueChange={handleAnswerChange}
           className="space-y-3"
+          dir="rtl"
         >
-          {[1, 2, 3, 4, 5].map((value) => (
+          {[5, 4, 3, 2, 1].map((value) => (
             <div 
               key={value}
               className={`flex items-center space-x-4 space-x-reverse p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:bg-blue-50 hover:border-blue-200 ${
@@ -86,16 +87,17 @@ const QuestionCard = ({
               <RadioGroupItem 
                 value={value.toString()} 
                 id={`r${value}`} 
-                className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 ml-3"
               />
               <Label 
                 htmlFor={`r${value}`} 
                 className="flex-1 cursor-pointer text-lg font-medium text-right leading-relaxed"
+                style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
               >
-                <span className="inline-flex items-center gap-3">
-                  <span className="font-bold text-blue-600 text-xl">{value}</span>
-                  <span>-</span>
+                <span className="inline-flex items-center gap-3 justify-end w-full">
                   <span>{scaleLabels[value as keyof typeof scaleLabels]}</span>
+                  <span>-</span>
+                  <span className="font-bold text-blue-600 text-xl">{value}</span>
                 </span>
               </Label>
             </div>
@@ -103,19 +105,20 @@ const QuestionCard = ({
         </RadioGroup>
 
         <div className="flex justify-between items-center pt-6 border-t border-gray-100">
+          <div className="text-sm text-gray-500 font-medium" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+            {currentAnswer ? 'עובר לשאלה הבאה...' : 'בחרו תשובה כדי להמשיך'}
+          </div>
+          
           <Button
             variant="outline"
             onClick={onBack}
             disabled={!canGoBack}
             className="h-12 px-6 font-semibold text-gray-700 border-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4" />
             חזור
           </Button>
-          
-          <div className="text-sm text-gray-500 font-medium">
-            {currentAnswer ? 'עובר לשאלה הבאה...' : 'בחרו תשובה כדי להמשיך'}
-          </div>
         </div>
       </CardContent>
     </Card>

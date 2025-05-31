@@ -410,19 +410,19 @@ const Questionnaire = () => {
         {/* Header with progress */}
         <div className="mb-8">
           <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
               שאלון WOCA
             </h1>
-            <p className="text-lg text-gray-600 font-medium">
+            <p className="text-lg text-gray-600 font-medium text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
               קבוצה: <span className="text-blue-600 font-bold">{groupId}</span>
             </p>
           </div>
           
           <div className="space-y-4 bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
-            <Progress value={progress} className="h-4 bg-gray-200" />
-            <div className="flex justify-between text-base text-gray-700 font-medium">
-              <span>שאלה {currentQuestionIndex + 1} מתוך {questions.length}</span>
+            <Progress value={progress} className="h-4 bg-gray-200" dir="ltr" />
+            <div className="flex justify-between text-base text-gray-700 font-medium" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
               <span className="text-blue-600 font-bold">{Math.round(progress)}% הושלם</span>
+              <span>שאלה {currentQuestionIndex + 1} מתוך {questions.length}</span>
             </div>
           </div>
         </div>
@@ -443,8 +443,8 @@ const Questionnaire = () => {
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" dir="rtl">
             <div className="bg-white p-8 rounded-2xl text-center shadow-2xl">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto mb-6"></div>
-              <p className="text-xl font-semibold text-gray-800">שומר תשובות...</p>
-              <p className="text-gray-600 mt-2">אנא המתינו</p>
+              <p className="text-xl font-semibold text-gray-800" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>שומר תשובות...</p>
+              <p className="text-gray-600 mt-2" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>אנא המתינו</p>
             </div>
           </div>
         )}
