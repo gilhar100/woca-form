@@ -311,20 +311,16 @@ const Questionnaire = () => {
           questionResponses[`question_${question.id}`] = answers[question.id];
         }
       });
-
-      // Generate a unique ID for this response
-      const responseId = crypto.randomUUID();
       
       const { error } = await supabase
         .from('woca_responses')
         .insert({
-          id: responseId,
           full_name: personalDetails?.fullName || '',
           education: personalDetails?.education || null,
           profession: personalDetails?.profession || null,
           organization: personalDetails?.organization || null,
           experience_years: personalDetails?.experienceYears || null,
-          email: personalDetails?.email || '',
+          email: personalDetails?.email || null,
           phone: personalDetails?.phone || null,
           scores: scores,
           overall_score: overallScore,

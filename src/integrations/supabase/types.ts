@@ -138,7 +138,7 @@ export type Database = {
         }
         Relationships: []
       }
-      woca_responses: {
+      woca: {
         Row: {
           age: string | null
           consent_research: boolean | null
