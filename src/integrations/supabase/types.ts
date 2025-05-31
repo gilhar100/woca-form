@@ -25,6 +25,7 @@ export type Database = {
           phone: string | null
           profession: string | null
           scores: Json
+          workshop_id: number
         }
         Insert: {
           age?: number | null
@@ -41,6 +42,7 @@ export type Database = {
           phone?: string | null
           profession?: string | null
           scores: Json
+          workshop_id?: number
         }
         Update: {
           age?: number | null
@@ -57,6 +59,7 @@ export type Database = {
           phone?: string | null
           profession?: string | null
           scores?: Json
+          workshop_id?: number
         }
         Relationships: []
       }
