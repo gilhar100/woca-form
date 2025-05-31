@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Progress } from "@/components/ui/progress";
@@ -7,6 +6,9 @@ import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from 'uuid';
 import GroupIdForm from '@/components/GroupIdForm';
 import QuestionnairePage from '@/components/QuestionnairePage';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { CheckCircle } from "lucide-react";
 
 const questions = [
   {
@@ -250,6 +252,7 @@ const Questionnaire = () => {
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+  const [showCompletionScreen, setShowCompletionScreen] = useState(false);
 
   const questionsPerPage = 9;
   const totalPages = 4;
@@ -389,21 +392,9 @@ const Questionnaire = () => {
 
       console.log('Data saved successfully:', data);
       
-      toast({
-        title: "הנתונים נשמרו בהצלחה",
-        description: "התשובות שלך נשמרו במערכת",
-        variant: "default",
-      });
-
-      navigate('/results', {
-        state: {
-          scores,
-          overallScore,
-          personalDetails,
-          answers,
-          groupId
-        }
-      });
+      // Show completion screen instead of navigating immediately
+      setShowCompletionScreen(true);
+      
     } catch (error) {
       console.error('Unexpected error:', error);
       toast({
@@ -416,12 +407,56 @@ const Questionnaire = () => {
     }
   };
 
+  const handleContinueToResults = () => {
+    const scores = calculateScores();
+    const overallScore = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.keys(scores).length;
+    
+    navigate('/results', {
+      state: {
+        scores,
+        overallScore,
+        personalDetails,
+        answers,
+        groupId
+      }
+    });
+  };
+
   // Calculate progress based on answered questions across all pages
   const totalAnsweredQuestions = Object.keys(answers).length;
   const progress = (totalAnsweredQuestions / questions.length) * 100;
 
   if (showGroupIdForm) {
     return <GroupIdForm onSubmit={handleGroupIdSubmit} />;
+  }
+
+  // Show completion screen
+  if (showCompletionScreen) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center p-4" dir="rtl">
+        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm max-w-2xl w-full">
+          <CardContent className="p-12 text-center space-y-8">
+            <div className="flex justify-center">
+              <CheckCircle className="w-24 h-24 text-green-500" />
+            </div>
+            
+            <h1 className="text-4xl font-bold text-gray-800 leading-relaxed" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+              התשובות נקלטו בהצלחה.<br />תודה על מילוי השאלון!
+            </h1>
+            
+            <div className="pt-6">
+              <Button
+                onClick={handleContinueToResults}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg"
+                style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+              >
+                צפה בתוצאות
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
