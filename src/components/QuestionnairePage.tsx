@@ -37,13 +37,12 @@ const QuestionnairePage = ({
   totalPages,
   showValidation
 }: QuestionnairePageProps) => {
-  const handleAnswerChange = (questionId: number, value: string) => {
-    const numValue = parseInt(value);
-    onAnswer(questionId, numValue);
+  const handleAnswerChange = (questionId: number, value: number) => {
+    onAnswer(questionId, value);
   };
 
   const scaleLabels = {
-    5: 'נכון מאוד',
+    5: 'בדרך כלל או תמיד',
     4: 'לעיתים קרובות', 
     3: 'לפעמים',
     2: 'לעיתים רחוקות',
@@ -73,9 +72,9 @@ const QuestionnairePage = ({
             </Alert>
           )}
 
-          <div className="space-y-12">
+          <div className="space-y-16">
             {questions.map((question, index) => (
-              <div key={question.id} className="space-y-6">
+              <div key={question.id} className="space-y-8">
                 <div className="flex items-start gap-4" dir="rtl">
                   <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
                     {index + 1}
@@ -87,21 +86,21 @@ const QuestionnairePage = ({
                 
                 <RadioGroup 
                   value={answers[question.id]?.toString() || ''} 
-                  onValueChange={(value) => handleAnswerChange(question.id, value)}
-                  className="flex justify-center gap-8 mt-6"
+                  onValueChange={(value) => handleAnswerChange(question.id, parseInt(value))}
+                  className="flex justify-center gap-12 mt-8"
                   dir="rtl"
                 >
                   {[5, 4, 3, 2, 1].map((value) => (
                     <div 
                       key={value}
                       className="flex flex-col items-center cursor-pointer"
-                      onClick={() => handleAnswerChange(question.id, value.toString())}
+                      onClick={() => handleAnswerChange(question.id, value)}
                     >
                       <div 
-                        className={`w-12 h-12 rounded-full border-2 flex items-center justify-center mb-2 transition-all duration-200 ${
+                        className={`w-16 h-16 rounded-full border-2 flex items-center justify-center mb-3 transition-all duration-200 ${
                           answers[question.id] === value 
-                            ? 'bg-blue-500 border-blue-500 text-white' 
-                            : 'bg-white border-gray-300 text-gray-600 hover:border-blue-300'
+                            ? 'bg-blue-500 border-blue-500 text-white shadow-lg' 
+                            : 'bg-white border-gray-300 text-gray-600 hover:border-blue-300 hover:shadow-md'
                         }`}
                       >
                         <RadioGroupItem 
@@ -109,11 +108,11 @@ const QuestionnairePage = ({
                           id={`q${question.id}_r${value}`} 
                           className="sr-only"
                         />
-                        <span className="font-bold text-sm">{value}</span>
+                        <span className="font-bold text-lg">{value}</span>
                       </div>
                       <Label 
                         htmlFor={`q${question.id}_r${value}`} 
-                        className="cursor-pointer text-center text-xs text-gray-600 max-w-[80px] leading-tight"
+                        className="cursor-pointer text-center text-sm text-gray-600 max-w-[120px] leading-tight font-medium"
                         style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                       >
                         {scaleLabels[value as keyof typeof scaleLabels]}
