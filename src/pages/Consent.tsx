@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { v4 as uuidv4 } from 'uuid';
 
 interface LocationState {
   answers: Record<string, number>;
@@ -77,20 +78,28 @@ const Consent = () => {
       const { scores, overallScore } = calculateScores(state.answers);
       
       if (consentResearch) {
+        // Create question responses dictionary
+        const questionResponses: { [key: string]: number } = {};
+        Object.keys(state.answers).forEach(questionKey => {
+          questionResponses[`question_${questionKey}`] = state.answers[questionKey];
+        });
+
         const { error } = await supabase
           .from('woca_responses')
           .insert({
+            id: uuidv4(),
             full_name: state.personalDetails.fullName,
-            age: state.personalDetails.age || null,
+            age: state.personalDetails.age.toString(), // Convert number to string
             gender: state.personalDetails.gender || null,
             education: state.personalDetails.education || null,
             profession: state.personalDetails.profession || null,
             organization: state.personalDetails.organization || null,
             experience_years: state.personalDetails.experienceYears || null,
-            email: state.personalDetails.email || null,
+            email: state.personalDetails.email,
             phone: state.personalDetails.phone || null,
             scores: scores,
             overall_score: overallScore,
+            question_responses: questionResponses,
             consent_research: consentResearch
           });
 
@@ -134,7 +143,7 @@ const Consent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
       <div className="max-w-3xl mx-auto">
         <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center">
