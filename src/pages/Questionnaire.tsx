@@ -316,7 +316,7 @@ const Questionnaire = () => {
       const responseId = crypto.randomUUID();
       
       const { error } = await supabase
-        .from('woca')
+        .from('woca_responses')
         .insert({
           id: responseId,
           full_name: personalDetails?.fullName || '',
