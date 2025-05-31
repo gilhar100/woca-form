@@ -148,7 +148,7 @@ const questions = [
   },
   {
     id: 24,
-    text: "חוסר ודאות נתפסת כהזדמנות ללמידה",
+    text: "חוסר ודאות נתפסת כopportunità ללמידה",
     domain: "Innovation",
     reversed: false,
   },
@@ -273,7 +273,7 @@ const Questionnaire = () => {
       } else {
         handleSubmit();
       }
-    }, 300);
+    }, 500);
   };
 
   const handleBack = () => {
@@ -405,22 +405,24 @@ const Questionnaire = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-2 sm:p-4" dir="rtl">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
+      <div className="max-w-3xl mx-auto">
         {/* Header with progress */}
-        <div className="mb-4 sm:mb-6">
-          <div className="text-center mb-4">
-            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              שאלון SALIMA
+        <div className="mb-8">
+          <div className="text-center mb-6">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+              שאלון WOCA
             </h1>
-            <p className="text-sm text-gray-500 mt-1">קבוצה: {groupId}</p>
+            <p className="text-lg text-gray-600 font-medium">
+              קבוצה: <span className="text-blue-600 font-bold">{groupId}</span>
+            </p>
           </div>
           
-          <div className="space-y-2">
-            <Progress value={progress} className="h-3" />
-            <div className="flex justify-between text-sm text-gray-600">
+          <div className="space-y-4 bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
+            <Progress value={progress} className="h-4 bg-gray-200" />
+            <div className="flex justify-between text-base text-gray-700 font-medium">
               <span>שאלה {currentQuestionIndex + 1} מתוך {questions.length}</span>
-              <span>{Math.round(progress)}% הושלם</span>
+              <span className="text-blue-600 font-bold">{Math.round(progress)}% הושלם</span>
             </div>
           </div>
         </div>
@@ -438,10 +440,11 @@ const Questionnaire = () => {
 
         {/* Loading overlay for submission */}
         {isSubmitting && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p>שומר תשובות...</p>
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" dir="rtl">
+            <div className="bg-white p-8 rounded-2xl text-center shadow-2xl">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto mb-6"></div>
+              <p className="text-xl font-semibold text-gray-800">שומר תשובות...</p>
+              <p className="text-gray-600 mt-2">אנא המתינו</p>
             </div>
           </div>
         )}
