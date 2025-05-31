@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Progress } from "@/components/ui/progress";
@@ -5,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from 'uuid';
 import GroupIdForm from '@/components/GroupIdForm';
-import QuestionCard from '@/components/QuestionCard';
+import QuestionnairePage from '@/components/QuestionnairePage';
 
 const questions = [
   {
@@ -245,9 +246,20 @@ const Questionnaire = () => {
   
   const [groupId, setGroupId] = useState<string>('');
   const [showGroupIdForm, setShowGroupIdForm] = useState(true);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showValidation, setShowValidation] = useState(false);
+
+  const questionsPerPage = 9;
+  const totalPages = 4;
+
+  // Split questions into pages
+  const getPageQuestions = (pageIndex: number) => {
+    const startIndex = pageIndex * questionsPerPage;
+    const endIndex = startIndex + questionsPerPage;
+    return questions.slice(startIndex, endIndex);
+  };
 
   useEffect(() => {
     if (!personalDetails) {
@@ -265,20 +277,30 @@ const Questionnaire = () => {
       ...prevAnswers,
       [questionId]: value,
     }));
+    setShowValidation(false);
+  };
+
+  const handleNext = () => {
+    const pageQuestions = getPageQuestions(currentPage);
+    const allAnswered = pageQuestions.every(q => answers[q.id] !== undefined);
     
-    // Auto-advance to next question after a short delay
-    setTimeout(() => {
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
-      } else {
-        handleSubmit();
-      }
-    }, 500);
+    if (!allAnswered) {
+      setShowValidation(true);
+      return;
+    }
+
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+      setShowValidation(false);
+    } else {
+      handleSubmit();
+    }
   };
 
   const handleBack = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+      setShowValidation(false);
     }
   };
 
@@ -356,10 +378,6 @@ const Questionnaire = () => {
 
       if (error) {
         console.error('Supabase error details:', error);
-        console.error('Error code:', error.code);
-        console.error('Error message:', error.message);
-        console.error('Error details:', error.details);
-        console.error('Error hint:', error.hint);
         
         toast({
           title: "שגיאה בשמירת הנתונים",
@@ -398,7 +416,9 @@ const Questionnaire = () => {
     }
   };
 
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  // Calculate progress based on answered questions across all pages
+  const totalAnsweredQuestions = Object.keys(answers).length;
+  const progress = (totalAnsweredQuestions / questions.length) * 100;
 
   if (showGroupIdForm) {
     return <GroupIdForm onSubmit={handleGroupIdSubmit} />;
@@ -406,7 +426,7 @@ const Questionnaire = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Header with progress */}
         <div className="mb-8">
           <div className="text-center mb-6">
@@ -422,20 +442,22 @@ const Questionnaire = () => {
             <Progress value={progress} className="h-4 bg-gray-200" dir="ltr" />
             <div className="flex justify-between text-base text-gray-700 font-medium" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
               <span className="text-blue-600 font-bold">{Math.round(progress)}% הושלם</span>
-              <span>שאלה {currentQuestionIndex + 1} מתוך {questions.length}</span>
+              <span>עמוד {currentPage + 1} מתוך {totalPages} • {totalAnsweredQuestions} מתוך {questions.length} שאלות נענו</span>
             </div>
           </div>
         </div>
 
-        {/* Question Card */}
-        <QuestionCard
-          question={questions[currentQuestionIndex]}
-          currentAnswer={answers[questions[currentQuestionIndex].id]}
-          onAnswer={(value) => handleAnswer(questions[currentQuestionIndex].id, value)}
+        {/* Current Page */}
+        <QuestionnairePage
+          questions={getPageQuestions(currentPage)}
+          answers={answers}
+          onAnswer={handleAnswer}
+          onNext={handleNext}
           onBack={handleBack}
-          canGoBack={currentQuestionIndex > 0}
-          questionNumber={currentQuestionIndex + 1}
-          totalQuestions={questions.length}
+          canGoBack={currentPage > 0}
+          pageNumber={currentPage + 1}
+          totalPages={totalPages}
+          showValidation={showValidation}
         />
 
         {/* Loading overlay for submission */}
