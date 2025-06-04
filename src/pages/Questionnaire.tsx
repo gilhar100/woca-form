@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Progress } from "@/components/ui/progress";
@@ -229,6 +230,15 @@ const questions = [
   },
 ];
 
+// Map domains to WOCA parameters
+const domainToWOCA = {
+  Communication: "WAR",
+  Trust: "OPPORTUNITY", 
+  Innovation: "COMFORT",
+  Collaboration: "APATHY",
+  Accountability: "WAR"
+};
+
 interface PersonalDetails {
   fullName: string;
   education: string;
@@ -307,35 +317,36 @@ const Questionnaire = () => {
     }
   };
 
-  const calculateScores = () => {
+  const calculateIndividualScores = () => {
     const scores: { [key: string]: number } = {
-      Communication: 0,
-      Trust: 0,
-      Innovation: 0,
-      Collaboration: 0,
-      Accountability: 0,
+      WAR: 0,
+      OPPORTUNITY: 0,
+      COMFORT: 0,
+      APATHY: 0,
     };
 
     let counts: { [key: string]: number } = {
-      Communication: 0,
-      Trust: 0,
-      Innovation: 0,
-      Collaboration: 0,
-      Accountability: 0,
+      WAR: 0,
+      OPPORTUNITY: 0,
+      COMFORT: 0,
+      APATHY: 0,
     };
 
     questions.forEach(question => {
       if (answers[question.id]) {
-        // Handle reversed questions by inverting the score
+        // Apply reverse scoring if needed
         const adjustedScore = question.reversed ? (6 - answers[question.id]) : answers[question.id];
-        scores[question.domain] += adjustedScore;
-        counts[question.domain]++;
+        const wocaParameter = domainToWOCA[question.domain as keyof typeof domainToWOCA];
+        
+        scores[wocaParameter] += adjustedScore;
+        counts[wocaParameter]++;
       }
     });
 
-    for (const domain in scores) {
-      if (counts[domain] > 0) {
-        scores[domain] = scores[domain] / counts[domain];
+    // Calculate averages
+    for (const parameter in scores) {
+      if (counts[parameter] > 0) {
+        scores[parameter] = scores[parameter] / counts[parameter];
       }
     }
 
@@ -346,7 +357,7 @@ const Questionnaire = () => {
     setIsSubmitting(true);
     
     try {
-      const scores = calculateScores();
+      const scores = calculateIndividualScores();
       const overallScore = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.keys(scores).length;
       
       // Create question responses dictionary
@@ -407,13 +418,61 @@ const Questionnaire = () => {
     }
   };
 
-  const handleContinueToResults = () => {
-    const scores = calculateScores();
-    const overallScore = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.keys(scores).length;
+  const fetchGroupScores = async () => {
+    try {
+      // Fetch all responses for this group
+      const { data: groupResponses, error } = await supabase
+        .from('woca_responses')
+        .select('scores')
+        .eq('group_id', groupId);
+
+      if (error) {
+        console.error('Error fetching group scores:', error);
+        return null;
+      }
+
+      if (!groupResponses || groupResponses.length === 0) {
+        return null;
+      }
+
+      // Calculate group averages
+      const groupScores: { [key: string]: number } = {
+        WAR: 0,
+        OPPORTUNITY: 0,
+        COMFORT: 0,
+        APATHY: 0,
+      };
+
+      groupResponses.forEach(response => {
+        if (response.scores) {
+          Object.keys(groupScores).forEach(parameter => {
+            groupScores[parameter] += response.scores[parameter] || 0;
+          });
+        }
+      });
+
+      // Calculate averages
+      Object.keys(groupScores).forEach(parameter => {
+        groupScores[parameter] = groupScores[parameter] / groupResponses.length;
+      });
+
+      return groupScores;
+    } catch (error) {
+      console.error('Error calculating group scores:', error);
+      return null;
+    }
+  };
+
+  const handleContinueToResults = async () => {
+    const individualScores = calculateIndividualScores();
+    const groupScores = await fetchGroupScores();
+    const overallScore = Object.values(individualScores).reduce((sum, score) => sum + score, 0) / Object.keys(individualScores).length;
     
     navigate('/results', {
       state: {
-        scores,
+        scores: groupScores || individualScores, // Use group scores if available
+        individualScores,
+        groupScores,
         overallScore,
         personalDetails,
         answers,
@@ -430,7 +489,7 @@ const Questionnaire = () => {
     return <GroupIdForm onSubmit={handleGroupIdSubmit} />;
   }
 
-  // Show completion screen
+  // Show completion screen with updated message
   if (showCompletionScreen) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center p-4" dir="rtl">
@@ -440,8 +499,8 @@ const Questionnaire = () => {
               <CheckCircle className="w-24 h-24 text-green-500" />
             </div>
             
-            <h1 className="text-4xl font-bold text-gray-800 leading-relaxed" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-              התשובות נקלטו בהצלחה.<br />תודה על מילוי השאלון!
+            <h1 className="text-5xl font-bold text-gray-800 leading-relaxed" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+              הנתונים נקלטו בהצלחה
             </h1>
             
             <div className="pt-6">
