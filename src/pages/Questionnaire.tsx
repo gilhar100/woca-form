@@ -11,7 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { wocaQuestions } from '@/data/wocaQuestions';
-import { calculateWOCAScores } from '@/utils/wocaCalculations';
+import { calculateWOCAScores, applyReverseScoring } from '@/utils/wocaCalculations';
 
 interface PersonalDetails {
   fullName: string;
@@ -98,13 +98,23 @@ const Questionnaire = () => {
       const scores = calculateWOCAScores(wocaQuestions, answers);
       const overallScore = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.keys(scores).length;
       
-      // Create question responses dictionary
-      const questionResponses: { [key: string]: number } = {};
-      wocaQuestions.forEach(question => {
-        if (answers[question.id]) {
-          questionResponses[`question_${question.id}`] = answers[question.id];
-        }
-      });
+      // Create detailed question responses with all required fields
+      const questionResponses = wocaQuestions.map(question => {
+        const rawScore = answers[question.id];
+        if (rawScore === undefined) return null;
+        
+        // Apply reverse scoring if needed
+        const finalScore = question.reversed ? applyReverseScoring(rawScore) : rawScore;
+        
+        return {
+          questionId: question.id,
+          score: finalScore,
+          rawScore: rawScore, // Original score before reverse scoring
+          dimension: question.domain,
+          isReversed: question.reversed,
+          questionText: question.text
+        };
+      }).filter(response => response !== null); // Remove unanswered questions
       
       // Convert WOCAScores to plain object for database storage
       const scoresForDB = {
@@ -131,6 +141,7 @@ const Questionnaire = () => {
       };
 
       console.log('Attempting to insert data:', insertData);
+      console.log('Question responses:', questionResponses);
       
       const { data, error } = await supabase
         .from('woca_responses')
