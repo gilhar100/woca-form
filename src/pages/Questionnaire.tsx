@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Progress } from "@/components/ui/progress";
@@ -183,44 +182,16 @@ const Questionnaire = () => {
         return null;
       }
 
-      // Calculate group averages from question responses
-      const groupScores = {
-        War: 0,
-        Opportunity: 0,
-        Comfort: 0,
-        Apathy: 0,
-      };
-
-      const scoreCounts = {
-        War: 0,
-        Opportunity: 0,
-        Comfort: 0,
-        Apathy: 0,
-      };
-
+      // Aggregate all question responses from all group members
+      const allQuestionResponses: any[] = [];
       groupResponses.forEach(response => {
         if (response.question_responses && Array.isArray(response.question_responses)) {
-          response.question_responses.forEach((qr: any) => {
-            if (qr && qr.dimension && qr.score !== undefined) {
-              const dimension = qr.dimension as keyof typeof groupScores;
-              if (groupScores[dimension] !== undefined) {
-                groupScores[dimension] += qr.score;
-                scoreCounts[dimension]++;
-              }
-            }
-          });
+          allQuestionResponses.push(...response.question_responses);
         }
       });
 
-      // Calculate averages
-      Object.keys(groupScores).forEach(dimension => {
-        const key = dimension as keyof typeof groupScores;
-        if (scoreCounts[key] > 0) {
-          groupScores[key] = groupScores[key] / scoreCounts[key];
-        }
-      });
-
-      return groupScores;
+      // Calculate group averages using the new function
+      return calculateWOCAScoresFromResponses(allQuestionResponses);
     } catch (error) {
       console.error('Error calculating group scores:', error);
       return null;
