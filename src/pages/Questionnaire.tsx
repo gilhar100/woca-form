@@ -106,7 +106,7 @@ const Questionnaire = () => {
         }
       });
       
-      // Prepare data for insertion including group_id
+      // Prepare data for insertion including group_id - convert WOCAScores to plain object
       const insertData = {
         id: uuidv4(),
         full_name: personalDetails?.fullName || '',
@@ -117,7 +117,7 @@ const Questionnaire = () => {
         email: personalDetails?.email || '',
         phone: personalDetails?.phone || null,
         group_id: groupId,
-        scores: scores,
+        scores: scores as { [key: string]: number }, // Convert to plain object
         overall_score: overallScore,
         question_responses: questionResponses,
       };
@@ -184,7 +184,7 @@ const Questionnaire = () => {
       groupResponses.forEach(response => {
         if (response.scores) {
           Object.keys(groupScores).forEach(parameter => {
-            groupScores[parameter as keyof typeof groupScores] += response.scores[parameter] || 0;
+            groupScores[parameter as keyof typeof groupScores] += (response.scores as any)[parameter] || 0;
           });
         }
       });
