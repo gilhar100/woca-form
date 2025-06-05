@@ -116,14 +116,6 @@ const Questionnaire = () => {
         };
       }).filter(response => response !== null); // Remove unanswered questions
       
-      // Convert WOCAScores to plain object for database storage
-      const scoresForDB = {
-        War: scores.War,
-        Opportunity: scores.Opportunity,
-        Comfort: scores.Comfort,
-        Apathy: scores.Apathy,
-      };
-      
       // Prepare data for insertion including group_id
       const insertData = {
         id: uuidv4(),
@@ -135,7 +127,6 @@ const Questionnaire = () => {
         email: personalDetails?.email || '',
         phone: personalDetails?.phone || null,
         group_id: groupId,
-        scores: scoresForDB,
         overall_score: overallScore,
         question_responses: questionResponses,
       };
@@ -180,7 +171,7 @@ const Questionnaire = () => {
       // Fetch all responses for this group
       const { data: groupResponses, error } = await supabase
         .from('woca_responses')
-        .select('scores')
+        .select('question_responses')
         .eq('group_id', groupId);
 
       if (error) {
@@ -192,7 +183,7 @@ const Questionnaire = () => {
         return null;
       }
 
-      // Calculate group averages
+      // Calculate group averages from question responses
       const groupScores = {
         War: 0,
         Opportunity: 0,
@@ -200,18 +191,33 @@ const Questionnaire = () => {
         Apathy: 0,
       };
 
+      const scoreCounts = {
+        War: 0,
+        Opportunity: 0,
+        Comfort: 0,
+        Apathy: 0,
+      };
+
       groupResponses.forEach(response => {
-        if (response.scores) {
-          Object.keys(groupScores).forEach(parameter => {
-            groupScores[parameter as keyof typeof groupScores] += (response.scores as any)[parameter] || 0;
+        if (response.question_responses && Array.isArray(response.question_responses)) {
+          response.question_responses.forEach((qr: any) => {
+            if (qr && qr.dimension && qr.score) {
+              const dimension = qr.dimension as keyof typeof groupScores;
+              if (groupScores[dimension] !== undefined) {
+                groupScores[dimension] += qr.score;
+                scoreCounts[dimension]++;
+              }
+            }
           });
         }
       });
 
       // Calculate averages
-      Object.keys(groupScores).forEach(parameter => {
-        groupScores[parameter as keyof typeof groupScores] = 
-          groupScores[parameter as keyof typeof groupScores] / groupResponses.length;
+      Object.keys(groupScores).forEach(dimension => {
+        const key = dimension as keyof typeof groupScores;
+        if (scoreCounts[key] > 0) {
+          groupScores[key] = groupScores[key] / scoreCounts[key];
+        }
       });
 
       return groupScores;
