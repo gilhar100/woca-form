@@ -101,7 +101,7 @@ const Questionnaire = () => {
       const scores = calculateWOCAScores(first36Questions, answers);
       const overallScore = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.keys(scores).length;
       
-      // Create detailed question responses with all required fields - only for first 36 questions
+      // Create detailed question responses with reverse scoring applied
       const questionResponses = first36Questions.map(question => {
         const rawScore = answers[question.id];
         if (rawScore === undefined) return null;
@@ -112,14 +112,14 @@ const Questionnaire = () => {
         return {
           questionId: question.id,
           score: finalScore,
-          rawScore: rawScore, // Original score before reverse scoring
+          rawScore: rawScore,
           dimension: question.domain,
           isReversed: question.reversed,
           questionText: question.text
         };
-      }).filter(response => response !== null); // Remove unanswered questions
+      }).filter(response => response !== null);
       
-      // Prepare data for insertion - store individual question answers as q1-q36
+      // Prepare individual question answers as q1-q36 (store original answers, not reverse-scored)
       const questionAnswers: { [key: string]: number } = {};
       first36Questions.forEach(question => {
         if (answers[question.id] !== undefined) {
@@ -139,7 +139,7 @@ const Questionnaire = () => {
         group_id: groupId,
         overall_score: overallScore,
         question_responses: questionResponses,
-        ...questionAnswers, // Add q1-q36 individual answers
+        ...questionAnswers,
       };
 
       console.log('Attempting to insert data:', insertData);
@@ -218,7 +218,7 @@ const Questionnaire = () => {
     
     navigate('/results', {
       state: {
-        scores: groupScores || individualScores, // Use group scores if available
+        scores: groupScores || individualScores,
         individualScores,
         groupScores,
         overallScore,

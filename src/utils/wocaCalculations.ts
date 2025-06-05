@@ -43,17 +43,17 @@ export const calculateWOCAScores = (
   first36Questions.forEach(question => {
     if (answers[question.id] !== undefined) {
       // Apply reverse scoring if needed
-      const adjustedScore = question.reversed ? 
+      const finalScore = question.reversed ? 
         applyReverseScoring(answers[question.id]) : 
         answers[question.id];
       
       const domain = question.domain as keyof WOCAScores;
-      scores[domain] += adjustedScore;
+      scores[domain] += finalScore;
       counts[domain]++;
     }
   });
 
-  // Calculate averages per dimension only
+  // Calculate averages per parameter
   Object.keys(scores).forEach(domain => {
     const key = domain as keyof WOCAScores;
     if (counts[key] > 0) {
@@ -87,14 +87,14 @@ export const calculateWOCAScoresFromResponses = (questionResponses: any[]): WOCA
     if (qr && qr.dimension && qr.score !== undefined) {
       const dimension = qr.dimension as keyof WOCAScores;
       if (scores[dimension] !== undefined) {
-        // Use the score directly as reverse scoring should already be applied
+        // Use the final score (reverse scoring should already be applied)
         scores[dimension] += qr.score;
         counts[dimension]++;
       }
     }
   });
 
-  // Calculate averages per dimension
+  // Calculate averages per parameter
   Object.keys(scores).forEach(domain => {
     const key = domain as keyof WOCAScores;
     if (counts[key] > 0) {
