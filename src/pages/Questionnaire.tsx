@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Progress } from "@/components/ui/progress";
@@ -144,7 +145,7 @@ const Questionnaire = () => {
       console.log('Attempting to insert data:', insertData);
       console.log('Question responses:', questionResponses);
       
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('woca_responses')
         .insert(insertData);
 
@@ -159,7 +160,7 @@ const Questionnaire = () => {
         return;
       }
 
-      console.log('Data saved successfully:', data);
+      console.log('Data saved successfully');
       
       // Show completion screen
       setShowCompletionScreen(true);
