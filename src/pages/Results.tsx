@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { getDominantZone, getZoneNameInHebrew } from '@/utils/wocaCalculations';
+import { getDominantZone, getZoneNameInHebrew, getZoneAssignmentText, getZoneColor } from '@/utils/wocaCalculations';
 
 interface WOCAScores {
   War: number;
@@ -38,55 +38,63 @@ const Results = () => {
   }
 
   const { scores, groupScores, individualScores, groupId } = state;
+  const isGroupView = !!groupScores;
+  const displayScores = isGroupView ? groupScores! : scores;
 
+  // Prepare chart data with proper colors
   const chartData = [
     {
-      domain: 'War\n(מלחמה)',
-      score: scores.War,
-      fill: '#ef4444'
+      domain: 'מלחמה',
+      englishName: 'War',
+      score: displayScores.War,
+      fill: getZoneColor('War')
     },
     {
-      domain: 'Opportunity\n(הזדמנות)',
-      score: scores.Opportunity,
-      fill: '#22c55e'
+      domain: 'הזדמנות',
+      englishName: 'Opportunity', 
+      score: displayScores.Opportunity,
+      fill: getZoneColor('Opportunity')
     },
     {
-      domain: 'Comfort\n(נוחות)',
-      score: scores.Comfort,
-      fill: '#eab308'
+      domain: 'נוחות',
+      englishName: 'Comfort',
+      score: displayScores.Comfort,
+      fill: getZoneColor('Comfort')
     },
     {
-      domain: 'Apathy\n(אדישות)',
-      score: scores.Apathy,
-      fill: '#6b7280'
+      domain: 'אדישות',
+      englishName: 'Apathy',
+      score: displayScores.Apathy,
+      fill: getZoneColor('Apathy')
     }
   ];
 
   const radarData = [
     {
       domain: 'War',
-      score: scores.War,
+      score: displayScores.War,
       fullMark: 5
     },
     {
       domain: 'Opportunity',
-      score: scores.Opportunity,
+      score: displayScores.Opportunity,
       fullMark: 5
     },
     {
       domain: 'Comfort',
-      score: scores.Comfort,
+      score: displayScores.Comfort,
       fullMark: 5
     },
     {
       domain: 'Apathy',
-      score: scores.Apathy,
+      score: displayScores.Apathy,
       fullMark: 5
     }
   ];
 
-  // Find the dominant zone (highest score)
-  const dominantZone = getDominantZone(scores);
+  // Find the dominant zone and create assignment text
+  const dominantZone = getDominantZone(displayScores);
+  const zoneAssignmentText = getZoneAssignmentText(dominantZone, isGroupView);
 
   const getDetailedInterpretation = (domain: string, score: number) => {
     const interpretations = {
@@ -150,78 +158,95 @@ const Results = () => {
             </p>
             {groupId && (
               <p className="text-lg text-blue-600 font-bold" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                קבוצה: {groupId}
+                קוד קבוצה: {groupId}
               </p>
             )}
           </CardHeader>
         </Card>
 
-        {/* Dominant Zone Highlight */}
+        {/* Zone Assignment */}
         <Card className="shadow-xl border-0 bg-gradient-to-r from-blue-50 to-purple-50 border-r-4 border-blue-500">
           <CardContent className="pt-6">
             <div className="text-center">
               <h3 className="text-3xl font-bold text-blue-800 mb-4" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                האזור התודעתי הדומיננטי
+                זיהוי אזור התודעה
               </h3>
-              <div className={`text-5xl font-bold mb-2 ${getDomainColor(dominantZone)}`}>
-                {getZoneNameInHebrew(dominantZone)}
+              <div className="text-2xl font-bold text-blue-700 mb-4">
+                {zoneAssignmentText}
               </div>
-              <div className="text-lg text-gray-700">
-                ציון: <span className="font-bold">{scores[dominantZone as keyof WOCAScores].toFixed(2)}</span>
-              </div>
+              {isGroupView && (
+                <p className="text-lg text-blue-600" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                  (בהתבסס על ממוצע כל המשתתפים בקבוצה)
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Bar Chart */}
-          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-xl text-center" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                ציונים לפי אזורי WOCA
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="domain" tick={{ fontSize: 12 }} interval={0} />
-                  <YAxis domain={[0, 5]} />
-                  <Tooltip 
-                    formatter={(value: number) => [value.toFixed(2), 'ציון']} 
-                    labelStyle={{ textAlign: 'right', fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }} 
-                  />
-                  <Bar dataKey="score" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+        {/* Zone Comparison Chart */}
+        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+              השוואת ציונים בין אזורי WOCA
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="domain" 
+                  tick={{ fontSize: 14, fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }} 
+                  interval={0}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis domain={[0, 5]} tick={{ fontSize: 12 }} />
+                <Tooltip 
+                  formatter={(value: number, name: string, props: any) => [
+                    value.toFixed(2), 
+                    `${props.payload.englishName} (${props.payload.domain})`
+                  ]} 
+                  labelStyle={{ 
+                    textAlign: 'right', 
+                    fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' 
+                  }}
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #ccc',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="score" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
 
-          {/* Radar Chart */}
-          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-xl text-center" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                פרופיל WOCA
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <RadarChart data={radarData}>
-                  <PolarGrid />
-                  <PolarAngleAxis dataKey="domain" tick={{ fontSize: 12 }} />
-                  <PolarRadiusAxis angle={90} domain={[0, 5]} tick={{ fontSize: 10 }} />
-                  <Radar name="ציון" dataKey="score" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} strokeWidth={2} />
-                  <Tooltip formatter={(value: number) => [value.toFixed(2), 'ציון']} />
-                </RadarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Radar Chart */}
+        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-xl text-center" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+              פרופיל WOCA
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <RadarChart data={radarData}>
+                <PolarGrid />
+                <PolarAngleAxis dataKey="domain" tick={{ fontSize: 12 }} />
+                <PolarRadiusAxis angle={90} domain={[0, 5]} tick={{ fontSize: 10 }} />
+                <Radar name="ציון" dataKey="score" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} strokeWidth={2} />
+                <Tooltip formatter={(value: number) => [value.toFixed(2), 'ציון']} />
+              </RadarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
 
         {/* Detailed Results */}
         <div className="grid grid-cols-1 gap-6">
-          {Object.entries(scores).map(([domain, score]) => {
+          {Object.entries(displayScores).map(([domain, score]) => {
             const interpretation = getDetailedInterpretation(domain, score);
             return (
               <Card key={domain} className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
@@ -248,10 +273,10 @@ const Results = () => {
                     </p>
                   </div>
                   
-                  {/* Personal Interpretation */}
+                  {/* Personal/Group Interpretation */}
                   <div className="bg-blue-50 p-4 rounded-lg border-r-4 border-blue-500">
                     <h4 className="font-bold text-blue-800 mb-2 text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                      הפרשנות עבור הקבוצה:
+                      הפרשנות עבור {isGroupView ? 'הקבוצה' : 'הנבדק'}:
                     </h4>
                     <p className="text-blue-700 text-right leading-relaxed" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                       {interpretation.interpretation}
@@ -274,9 +299,11 @@ const Results = () => {
                 רק ארגון עם ציון גבוה באזור <strong>Opportunity (הזדמנות)</strong> נמצא במצב אידיאלי ומיטבי, 
                 ומבטיח יכולת הסתגלות, צמיחה, והתמודדות מוצלחת עם אתגרי העתיד.
               </p>
-              <p className="text-md text-green-600 mt-4 text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                הציונים המוצגים מבוססים על ממוצע כל המשתתפים בקבוצה "{groupId}".
-              </p>
+              {groupId && (
+                <p className="text-md text-green-600 mt-4 text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                  הציונים המוצגים מבוססים על ממוצע כל המשתתפים בקבוצה "{groupId}".
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -321,7 +348,7 @@ const Results = () => {
                 <ul className="space-y-1 text-gray-600" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                   <li>• כל אזור WOCA מכיל שאלות רלוונטיות</li>
                   <li>• שאלות מסוימות מחושבות הפוך</li>
-                  <li>• ציון האזור = ממוצע הקבוצה</li>
+                  <li>• ציון האזור = ממוצע השאלות באותו אזור בלבד</li>
                   <li>• האזור הדומיננטי = הציון הגבוה ביותר</li>
                 </ul>
               </div>
@@ -332,7 +359,7 @@ const Results = () => {
                 <ul className="space-y-1 text-gray-600" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                   <li>• ציון גבוה = נטייה חזקה לאזור</li>
                   <li>• האזור הדומיננטי מגדיר את האופי הארגוני</li>
-                  <li>• התוצאות מבוססות על ממוצע קבוצתי</li>
+                  <li>• במקרה של שוויון - מוצגים כל האזורים השווים</li>
                   <li>• המטרה: להגיע לאזור ההזדמנות</li>
                 </ul>
               </div>
