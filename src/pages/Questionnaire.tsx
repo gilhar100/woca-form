@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { wocaQuestions } from '@/data/wocaQuestions';
-import { calculateWOCAScores, applyReverseScoring } from '@/utils/wocaCalculations';
+import { calculateWOCAScores, calculateWOCAScoresFromResponses, applyReverseScoring } from '@/utils/wocaCalculations';
 
 interface PersonalDetails {
   fullName: string;
