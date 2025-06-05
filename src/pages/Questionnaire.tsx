@@ -106,7 +106,15 @@ const Questionnaire = () => {
         }
       });
       
-      // Prepare data for insertion including group_id - convert WOCAScores to plain object
+      // Convert WOCAScores to plain object for database storage
+      const scoresForDB = {
+        War: scores.War,
+        Opportunity: scores.Opportunity,
+        Comfort: scores.Comfort,
+        Apathy: scores.Apathy,
+      };
+      
+      // Prepare data for insertion including group_id
       const insertData = {
         id: uuidv4(),
         full_name: personalDetails?.fullName || '',
@@ -117,7 +125,7 @@ const Questionnaire = () => {
         email: personalDetails?.email || '',
         phone: personalDetails?.phone || null,
         group_id: groupId,
-        scores: scores as { [key: string]: number }, // Convert to plain object
+        scores: scoresForDB,
         overall_score: overallScore,
         question_responses: questionResponses,
       };
