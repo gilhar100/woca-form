@@ -37,7 +37,10 @@ export const calculateWOCAScores = (
     Apathy: 0,
   };
 
-  questions.forEach(question => {
+  // Only process first 36 questions
+  const first36Questions = questions.slice(0, 36);
+
+  first36Questions.forEach(question => {
     if (answers[question.id] !== undefined) {
       // Apply reverse scoring if needed
       const adjustedScore = question.reversed ? 
@@ -61,7 +64,7 @@ export const calculateWOCAScores = (
   return scores;
 };
 
-// Calculate scores from question_responses array
+// Calculate scores from question_responses array (for database data)
 export const calculateWOCAScoresFromResponses = (questionResponses: any[]): WOCAScores => {
   const scores: WOCAScores = {
     War: 0,
@@ -77,7 +80,10 @@ export const calculateWOCAScoresFromResponses = (questionResponses: any[]): WOCA
     Apathy: 0,
   };
 
-  questionResponses.forEach(qr => {
+  // Only process first 36 question responses
+  const first36Responses = questionResponses.filter(qr => qr && qr.questionId <= 36);
+
+  first36Responses.forEach(qr => {
     if (qr && qr.dimension && qr.score !== undefined) {
       const dimension = qr.dimension as keyof WOCAScores;
       if (scores[dimension] !== undefined) {
@@ -132,15 +138,15 @@ export const getZoneAssignmentText = (dominantZone: string, isGroup: boolean = f
   if (zones.length === 1) {
     return isGroup ? 
       `הקבוצה מזוהה עם אזור תודעה: ${hebrewZones[0]}` :
-      `הנבדק נמצא באזור תודעה: ${hebrewZones[0]}`;
+      `המשתתף נמצא באזור תודעה: ${hebrewZones[0]}`;
   } else if (zones.length === 2) {
     return isGroup ? 
       `הקבוצה מזוהה עם שני אזורי תודעה: ${hebrewZones[0]} ו-${hebrewZones[1]}` :
-      `הנבדק נמצא בשני אזורי תודעה: ${hebrewZones[0]} ו-${hebrewZones[1]}`;
+      `המשתתף נמצא בשני אזורי תודעה: ${hebrewZones[0]} ו-${hebrewZones[1]}`;
   } else {
     return isGroup ? 
       `הקבוצה מזוהה עם מספר אזורי תודעה: ${hebrewZones.join(', ')}` :
-      `הנבדק נמצא במספר אזורי תודעה: ${hebrewZones.join(', ')}`;
+      `המשתתף נמצא במספר אזורי תודעה: ${hebrewZones.join(', ')}`;
   }
 };
 

@@ -38,13 +38,14 @@ const Questionnaire = () => {
   const [showCompletionScreen, setShowCompletionScreen] = useState(false);
 
   const questionsPerPage = 9;
-  const totalPages = 4;
+  const totalPages = 4; // 36 questions / 9 per page = 4 pages
 
-  // Split questions into pages
+  // Split questions into pages - limit to first 36 questions
   const getPageQuestions = (pageIndex: number) => {
+    const first36Questions = wocaQuestions.slice(0, 36);
     const startIndex = pageIndex * questionsPerPage;
     const endIndex = startIndex + questionsPerPage;
-    return wocaQuestions.slice(startIndex, endIndex);
+    return first36Questions.slice(startIndex, endIndex);
   };
 
   useEffect(() => {
@@ -94,11 +95,13 @@ const Questionnaire = () => {
     setIsSubmitting(true);
     
     try {
-      const scores = calculateWOCAScores(wocaQuestions, answers);
+      // Only process first 36 questions
+      const first36Questions = wocaQuestions.slice(0, 36);
+      const scores = calculateWOCAScores(first36Questions, answers);
       const overallScore = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.keys(scores).length;
       
-      // Create detailed question responses with all required fields
-      const questionResponses = wocaQuestions.map(question => {
+      // Create detailed question responses with all required fields - only for first 36 questions
+      const questionResponses = first36Questions.map(question => {
         const rawScore = answers[question.id];
         if (rawScore === undefined) return null;
         
@@ -115,7 +118,14 @@ const Questionnaire = () => {
         };
       }).filter(response => response !== null); // Remove unanswered questions
       
-      // Prepare data for insertion - only using columns that exist in the database
+      // Prepare data for insertion - store individual question answers as q1-q36
+      const questionAnswers: { [key: string]: number } = {};
+      first36Questions.forEach(question => {
+        if (answers[question.id] !== undefined) {
+          questionAnswers[`q${question.id}`] = answers[question.id];
+        }
+      });
+      
       const insertData = {
         id: uuidv4(),
         full_name: personalDetails?.fullName || '',
@@ -128,6 +138,7 @@ const Questionnaire = () => {
         group_id: groupId,
         overall_score: overallScore,
         question_responses: questionResponses,
+        ...questionAnswers, // Add q1-q36 individual answers
       };
 
       console.log('Attempting to insert data:', insertData);
@@ -199,7 +210,8 @@ const Questionnaire = () => {
   };
 
   const handleContinueToResults = async () => {
-    const individualScores = calculateWOCAScores(wocaQuestions, answers);
+    const first36Questions = wocaQuestions.slice(0, 36);
+    const individualScores = calculateWOCAScores(first36Questions, answers);
     const groupScores = await fetchGroupScores();
     const overallScore = Object.values(individualScores).reduce((sum, score) => sum + score, 0) / Object.keys(individualScores).length;
     
@@ -216,9 +228,11 @@ const Questionnaire = () => {
     });
   };
 
-  // Calculate progress based on answered questions across all pages
-  const totalAnsweredQuestions = Object.keys(answers).length;
-  const progress = (totalAnsweredQuestions / wocaQuestions.length) * 100;
+  // Calculate progress based on answered questions across first 36 questions only
+  const totalAnsweredQuestions = Object.keys(answers).filter(questionId => 
+    parseInt(questionId) <= 36
+  ).length;
+  const progress = (totalAnsweredQuestions / 36) * 100;
 
   if (showGroupIdForm) {
     return <GroupIdForm onSubmit={handleGroupIdSubmit} />;
@@ -271,7 +285,7 @@ const Questionnaire = () => {
             <Progress value={progress} className="h-4 bg-gray-200" dir="ltr" />
             <div className="flex justify-between text-base text-gray-700 font-medium" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
               <span className="text-blue-600 font-bold">{Math.round(progress)}% הושלם</span>
-              <span>עמוד {currentPage + 1} מתוך {totalPages} • {totalAnsweredQuestions} מתוך {wocaQuestions.length} שאלות נענו</span>
+              <span>עמוד {currentPage + 1} מתוך {totalPages} • {totalAnsweredQuestions} מתוך 36 שאלות נענו</span>
             </div>
           </div>
         </div>
