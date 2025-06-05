@@ -116,7 +116,7 @@ const Questionnaire = () => {
         };
       }).filter(response => response !== null); // Remove unanswered questions
       
-      // Prepare data for insertion including group_id
+      // Prepare data for insertion - only using columns that exist in the database
       const insertData = {
         id: uuidv4(),
         full_name: personalDetails?.fullName || '',
@@ -201,7 +201,7 @@ const Questionnaire = () => {
       groupResponses.forEach(response => {
         if (response.question_responses && Array.isArray(response.question_responses)) {
           response.question_responses.forEach((qr: any) => {
-            if (qr && qr.dimension && qr.score) {
+            if (qr && qr.dimension && qr.score !== undefined) {
               const dimension = qr.dimension as keyof typeof groupScores;
               if (groupScores[dimension] !== undefined) {
                 groupScores[dimension] += qr.score;
