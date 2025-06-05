@@ -5,26 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { getDominantZone, getZoneNameInHebrew } from '@/utils/wocaCalculations';
+
+interface WOCAScores {
+  War: number;
+  Opportunity: number;
+  Comfort: number;
+  Apathy: number;
+}
 
 interface LocationState {
-  scores: {
-    WAR: number;
-    OPPORTUNITY: number;
-    COMFORT: number;
-    APATHY: number;
-  };
-  individualScores?: {
-    WAR: number;
-    OPPORTUNITY: number;
-    COMFORT: number;
-    APATHY: number;
-  };
-  groupScores?: {
-    WAR: number;
-    OPPORTUNITY: number;
-    COMFORT: number;
-    APATHY: number;
-  };
+  scores: WOCAScores;
+  individualScores?: WOCAScores;
+  groupScores?: WOCAScores;
   groupId?: string;
   overallScore?: number;
 }
@@ -48,77 +41,74 @@ const Results = () => {
 
   const chartData = [
     {
-      domain: 'WAR\n(מלחמה)',
-      score: scores.WAR,
+      domain: 'War\n(מלחמה)',
+      score: scores.War,
       fill: '#ef4444'
     },
     {
-      domain: 'OPPORTUNITY\n(הזדמנות)',
-      score: scores.OPPORTUNITY,
+      domain: 'Opportunity\n(הזדמנות)',
+      score: scores.Opportunity,
       fill: '#22c55e'
     },
     {
-      domain: 'COMFORT\n(נוחות)',
-      score: scores.COMFORT,
+      domain: 'Comfort\n(נוחות)',
+      score: scores.Comfort,
       fill: '#eab308'
     },
     {
-      domain: 'APATHY\n(אדישות)',
-      score: scores.APATHY,
+      domain: 'Apathy\n(אדישות)',
+      score: scores.Apathy,
       fill: '#6b7280'
     }
   ];
 
   const radarData = [
     {
-      domain: 'WAR',
-      score: scores.WAR,
+      domain: 'War',
+      score: scores.War,
       fullMark: 5
     },
     {
-      domain: 'OPPORTUNITY',
-      score: scores.OPPORTUNITY,
+      domain: 'Opportunity',
+      score: scores.Opportunity,
       fullMark: 5
     },
     {
-      domain: 'COMFORT',
-      score: scores.COMFORT,
+      domain: 'Comfort',
+      score: scores.Comfort,
       fullMark: 5
     },
     {
-      domain: 'APATHY',
-      score: scores.APATHY,
+      domain: 'Apathy',
+      score: scores.Apathy,
       fullMark: 5
     }
   ];
 
   // Find the dominant zone (highest score)
-  const dominantZone = Object.entries(scores).reduce((max, [zone, score]) => 
-    score > max.score ? { zone, score } : max, 
-    { zone: '', score: 0 }
-  );
+  const dominantZone = getDominantZone(scores);
 
   const getDetailedInterpretation = (domain: string, score: number) => {
     const interpretations = {
-      WAR: {
+      War: {
         title: "War (מלחמה)",
         description: "ציון גבוה מעיד על תחושת איום תמידית, לחץ, ומאבקים פנימיים בארגון. הארגון משקיע משאבים רבים בהישרדות ובתגובה למצבי משבר חוזרים ונשנים, מה שמונע פיתוח וצמיחה.",
         highScore: "הארגון נמצא במצב של לחץ קבוע ומאבקים פנימיים. ישנה תחושת איום מתמדת ומשקיעים משאבים רבים בהישרדות במקום בפיתוח.",
         lowScore: "הארגון אינו נמצא במצב של משבר או לחץ קיצוני. ישנה יכולת להתמקד בפיתוח ובצמיחה במקום רק בהישרדות."
       },
-      OPPORTUNITY: {
+      Opportunity: {
         title: "Opportunity (הזדמנות)",
         description: "ציון גבוה באזור זה הוא הרצוי ביותר, ומעיד שהארגון נמצא במצב אופטימלי. קיימת תחושת התלהבות, פתיחות, ומוכנות לנצל הזדמנויות. התרבות הארגונית מעודדת חדשנות, למידה, וגמישות מחשבתית, מה שמאפשר לארגון לצמוח ולהתפתח.",
         highScore: "מצב אידיאלי! הארגון נמצא במצב אופטימלי עם תחושת התלהבות ופתיחות. התרבות הארגונית מעודדת חדשנות, למידה וגמישות מחשבתית המאפשרים צמיחה והתפתחות.",
         lowScore: "הארגון מתקשה לזהות ולנצל הזדמנויות חדשות. ייתכן שקיימת נטייה לשמרנות ופחות פתיחות לחדשנות ושינויים."
       },
-      COMFORT: {
+      Comfort: {
         title: "Comfort (נוחות)",
         description: "ציון גבוה באזור זה מציין שהארגון נמצא באזור נוחות מוגזם. למרות שהארגון מתנהל בשלווה ויציבות, קיימת הימנעות משינויים, חוסר יוזמה, ושאננות. המצב הנוח מביא לקיפאון והיעדר חדשנות וצמיחה ארוכת טווח.",
         highScore: "הארגון נמצא באזור נוחות מוגזם. למרות היציבות והשלווה, קיימת הימנעות משינויים וחוסר יוזמה שעלולים להוביל לקיפאון וחוסר חדשנות.",
         lowScore: "הארגון אינו נמצא באזור נוחות מוגזם. ישנה פתיחות לשינויים ויוזמה לחידושים ופיתוח."
       },
-      APATHY: {
+      Apathy: {
         title: "Apathy (אדישות)",
         description: "ציון גבוה מעיד על מצב של אדישות וניתוק רגשי ומנטלי של העובדים מהארגון. קיימת תחושת חוסר אונים, ירידה במוטיבציה, וירידה משמעותית בביצועים. במצב זה הארגון מתקשה להתמודד עם אתגרים או לנצל הזדמנויות חדשות.",
         highScore: "מצב של אדישות וניתוק רגשי ומנטלי של העובדים מהארגון. קיימת תחושת חוסר אונים, ירידה במוטיבציה ובביצועים, וקושי להתמודד עם אתגרים חדשים.",
@@ -138,22 +128,12 @@ const Results = () => {
 
   const getDomainColor = (domain: string) => {
     const colors = {
-      WAR: "text-red-600",
-      OPPORTUNITY: "text-green-600",
-      COMFORT: "text-yellow-600",
-      APATHY: "text-gray-600"
+      War: "text-red-600",
+      Opportunity: "text-green-600",
+      Comfort: "text-yellow-600",
+      Apathy: "text-gray-600"
     };
     return colors[domain as keyof typeof colors];
-  };
-
-  const getZoneNameInHebrew = (zone: string) => {
-    const hebrewNames = {
-      WAR: "מלחמה",
-      OPPORTUNITY: "הזדמנות",
-      COMFORT: "נוחות",
-      APATHY: "אדישות"
-    };
-    return hebrewNames[zone as keyof typeof hebrewNames];
   };
 
   return (
@@ -183,11 +163,11 @@ const Results = () => {
               <h3 className="text-3xl font-bold text-blue-800 mb-4" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                 האזור התודעתי הדומיננטי
               </h3>
-              <div className={`text-5xl font-bold mb-2 ${getDomainColor(dominantZone.zone)}`}>
-                {getZoneNameInHebrew(dominantZone.zone)}
+              <div className={`text-5xl font-bold mb-2 ${getDomainColor(dominantZone)}`}>
+                {getZoneNameInHebrew(dominantZone)}
               </div>
               <div className="text-lg text-gray-700">
-                ציון: <span className="font-bold">{dominantZone.score.toFixed(2)}</span>
+                ציון: <span className="font-bold">{scores[dominantZone as keyof WOCAScores].toFixed(2)}</span>
               </div>
             </div>
           </CardContent>

@@ -10,234 +10,8 @@ import QuestionnairePage from '@/components/QuestionnairePage';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
-
-const questions = [
-  {
-    id: 1,
-    text: "העובדים מרגישים חופשיים לשתף רעיונות גם אם הם יוצאי דופן",
-    domain: "Communication",
-    reversed: false,
-  },
-  {
-    id: 2,
-    text: "פעמים רבות לא ברור לאן הארגון שואף להגיע",
-    domain: "Trust",
-    reversed: true,
-  },
-  {
-    id: 3,
-    text: "קיימת תקשורת פתוחה בגובה העיניים בין מנהלים לעובדים",
-    domain: "Communication",
-    reversed: false,
-  },
-  {
-    id: 4,
-    text: "שינויים בארגון מתקבלים בקושי רב",
-    domain: "Innovation",
-    reversed: true,
-  },
-  {
-    id: 5,
-    text: "הנהלת הארגון מגדירה חזון מעורר השראה",
-    domain: "Trust",
-    reversed: false,
-  },
-  {
-    id: 6,
-    text: "העובדים נרתעים מהבעת ביקורת או הצגת חלופות",
-    domain: "Communication",
-    reversed: true,
-  },
-  {
-    id: 7,
-    text: "בארגון קיימת מחויבות לתרומה שמעבר למטרות אישיות",
-    domain: "Collaboration",
-    reversed: false,
-  },
-  {
-    id: 8,
-    text: "לא נהוג לשתף בהצלחות או בכישלונות כדי ללמוד מהן",
-    domain: "Accountability",
-    reversed: true,
-  },
-  {
-    id: 9,
-    text: "ההנהלה מתנהלת בשקיפות מלאה",
-    domain: "Trust",
-    reversed: false,
-  },
-  {
-    id: 10,
-    text: "שיתוף פעולה בין צוותים מוביל לרעיונות חדשים",
-    domain: "Innovation",
-    reversed: false,
-  },
-  {
-    id: 11,
-    text: "קיימת תחושת משמעות רחבה בעבודת היומיום",
-    domain: "Collaboration",
-    reversed: false,
-  },
-  {
-    id: 12,
-    text: "העובדים נמנעים משיח ערכי בנוגע לעבודתם",
-    domain: "Communication",
-    reversed: true,
-  },
-  {
-    id: 13,
-    text: "נהוג להציג את הסיפור שמאחורי ההחלטות",
-    domain: "Trust",
-    reversed: false,
-  },
-  {
-    id: 14,
-    text: "העובדים חשים שהמנהלים לא קשובים לצרכים שלהם",
-    domain: "Communication",
-    reversed: true,
-  },
-  {
-    id: 15,
-    text: "קיימת אווירה של סקרנות וחיפוש ידע חדש",
-    domain: "Innovation",
-    reversed: false,
-  },
-  {
-    id: 16,
-    text: "אין מוטיבציה ליזום או להציע דרכי פעולה חדשות",
-    domain: "Innovation",
-    reversed: true,
-  },
-  {
-    id: 17,
-    text: "הארגון מעודד התפתחות אישית של כל עובד",
-    domain: "Collaboration",
-    reversed: false,
-  },
-  {
-    id: 18,
-    text: "נהוג להסתיר בעיות כדי להימנע מעימותים",
-    domain: "Trust",
-    reversed: true,
-  },
-  {
-    id: 19,
-    text: "תחושת האמון בארגון גבוהה",
-    domain: "Trust",
-    reversed: false,
-  },
-  {
-    id: 20,
-    text: "לא מקיימים שיחות עומק עם העובדים על מטרותיהם",
-    domain: "Accountability",
-    reversed: true,
-  },
-  {
-    id: 21,
-    text: "הארגון פועל מתוך ראייה רחבה של עתיד משתנה",
-    domain: "Innovation",
-    reversed: false,
-  },
-  {
-    id: 22,
-    text: "תהליך קבלת ההחלטות אינו כולל שיח פתוח עם עובדים",
-    domain: "Communication",
-    reversed: true,
-  },
-  {
-    id: 23,
-    text: "השראה היא חלק בלתי נפרד מהתרבות הארגונית",
-    domain: "Collaboration",
-    reversed: false,
-  },
-  {
-    id: 24,
-    text: "חוסר ודאות נתפסת כopportunità ללמידה",
-    domain: "Innovation",
-    reversed: false,
-  },
-  {
-    id: 25,
-    text: "לעובדים קל להביע תחושות ורעיונות אישיים",
-    domain: "Communication",
-    reversed: false,
-  },
-  {
-    id: 26,
-    text: "קיימת תחושת ניתוק בין הנהלה לעובדים",
-    domain: "Trust",
-    reversed: true,
-  },
-  {
-    id: 27,
-    text: "בארגון יודעים לנהל קונפליקטים באופן בונה",
-    domain: "Collaboration",
-    reversed: false,
-  },
-  {
-    id: 28,
-    text: "לא מקדישים זמן ללמידה ושיפור",
-    domain: "Accountability",
-    reversed: true,
-  },
-  {
-    id: 29,
-    text: "יש נכונות אמיתית להקשיב לדעות שונות",
-    domain: "Communication",
-    reversed: false,
-  },
-  {
-    id: 30,
-    text: "הארגון מתקשה להסתגל לשינויים חיצוניים",
-    domain: "Innovation",
-    reversed: true,
-  },
-  {
-    id: 31,
-    text: "תחושת השייכות בארגון חזקה ומחברת",
-    domain: "Collaboration",
-    reversed: false,
-  },
-  {
-    id: 32,
-    text: "המנהיגים מציגים דוגמה אישית",
-    domain: "Accountability",
-    reversed: false,
-  },
-  {
-    id: 33,
-    text: "הארגון מדגיש מטרות ארגוניות עם ערך חברתי",
-    domain: "Collaboration",
-    reversed: false,
-  },
-  {
-    id: 34,
-    text: "תחושת שליחות אישית אינה מקבלת ביטוי",
-    domain: "Accountability",
-    reversed: true,
-  },
-  {
-    id: 35,
-    text: "נהוג לשקול מגוון של חלופות לפני קבלת החלטה",
-    domain: "Accountability",
-    reversed: false,
-  },
-  {
-    id: 36,
-    text: "יש מחסור בבהירות לגבי כיווני פעולה ארגוניים",
-    domain: "Trust",
-    reversed: true,
-  },
-];
-
-// Map domains to WOCA parameters
-const domainToWOCA = {
-  Communication: "WAR",
-  Trust: "OPPORTUNITY", 
-  Innovation: "COMFORT",
-  Collaboration: "APATHY",
-  Accountability: "WAR"
-};
+import { wocaQuestions } from '@/data/wocaQuestions';
+import { calculateWOCAScores } from '@/utils/wocaCalculations';
 
 interface PersonalDetails {
   fullName: string;
@@ -271,7 +45,7 @@ const Questionnaire = () => {
   const getPageQuestions = (pageIndex: number) => {
     const startIndex = pageIndex * questionsPerPage;
     const endIndex = startIndex + questionsPerPage;
-    return questions.slice(startIndex, endIndex);
+    return wocaQuestions.slice(startIndex, endIndex);
   };
 
   useEffect(() => {
@@ -317,52 +91,16 @@ const Questionnaire = () => {
     }
   };
 
-  const calculateIndividualScores = () => {
-    const scores: { [key: string]: number } = {
-      WAR: 0,
-      OPPORTUNITY: 0,
-      COMFORT: 0,
-      APATHY: 0,
-    };
-
-    let counts: { [key: string]: number } = {
-      WAR: 0,
-      OPPORTUNITY: 0,
-      COMFORT: 0,
-      APATHY: 0,
-    };
-
-    questions.forEach(question => {
-      if (answers[question.id]) {
-        // Apply reverse scoring if needed
-        const adjustedScore = question.reversed ? (6 - answers[question.id]) : answers[question.id];
-        const wocaParameter = domainToWOCA[question.domain as keyof typeof domainToWOCA];
-        
-        scores[wocaParameter] += adjustedScore;
-        counts[wocaParameter]++;
-      }
-    });
-
-    // Calculate averages
-    for (const parameter in scores) {
-      if (counts[parameter] > 0) {
-        scores[parameter] = scores[parameter] / counts[parameter];
-      }
-    }
-
-    return scores;
-  };
-
   const handleSubmit = async () => {
     setIsSubmitting(true);
     
     try {
-      const scores = calculateIndividualScores();
+      const scores = calculateWOCAScores(wocaQuestions, answers);
       const overallScore = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.keys(scores).length;
       
       // Create question responses dictionary
       const questionResponses: { [key: string]: number } = {};
-      questions.forEach(question => {
+      wocaQuestions.forEach(question => {
         if (answers[question.id]) {
           questionResponses[`question_${question.id}`] = answers[question.id];
         }
@@ -403,7 +141,7 @@ const Questionnaire = () => {
 
       console.log('Data saved successfully:', data);
       
-      // Show completion screen instead of navigating immediately
+      // Show completion screen
       setShowCompletionScreen(true);
       
     } catch (error) {
@@ -436,24 +174,25 @@ const Questionnaire = () => {
       }
 
       // Calculate group averages
-      const groupScores: { [key: string]: number } = {
-        WAR: 0,
-        OPPORTUNITY: 0,
-        COMFORT: 0,
-        APATHY: 0,
+      const groupScores = {
+        War: 0,
+        Opportunity: 0,
+        Comfort: 0,
+        Apathy: 0,
       };
 
       groupResponses.forEach(response => {
         if (response.scores) {
           Object.keys(groupScores).forEach(parameter => {
-            groupScores[parameter] += response.scores[parameter] || 0;
+            groupScores[parameter as keyof typeof groupScores] += response.scores[parameter] || 0;
           });
         }
       });
 
       // Calculate averages
       Object.keys(groupScores).forEach(parameter => {
-        groupScores[parameter] = groupScores[parameter] / groupResponses.length;
+        groupScores[parameter as keyof typeof groupScores] = 
+          groupScores[parameter as keyof typeof groupScores] / groupResponses.length;
       });
 
       return groupScores;
@@ -464,7 +203,7 @@ const Questionnaire = () => {
   };
 
   const handleContinueToResults = async () => {
-    const individualScores = calculateIndividualScores();
+    const individualScores = calculateWOCAScores(wocaQuestions, answers);
     const groupScores = await fetchGroupScores();
     const overallScore = Object.values(individualScores).reduce((sum, score) => sum + score, 0) / Object.keys(individualScores).length;
     
@@ -483,13 +222,13 @@ const Questionnaire = () => {
 
   // Calculate progress based on answered questions across all pages
   const totalAnsweredQuestions = Object.keys(answers).length;
-  const progress = (totalAnsweredQuestions / questions.length) * 100;
+  const progress = (totalAnsweredQuestions / wocaQuestions.length) * 100;
 
   if (showGroupIdForm) {
     return <GroupIdForm onSubmit={handleGroupIdSubmit} />;
   }
 
-  // Show completion screen with updated message
+  // Show completion screen
   if (showCompletionScreen) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center p-4" dir="rtl">
@@ -536,7 +275,7 @@ const Questionnaire = () => {
             <Progress value={progress} className="h-4 bg-gray-200" dir="ltr" />
             <div className="flex justify-between text-base text-gray-700 font-medium" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
               <span className="text-blue-600 font-bold">{Math.round(progress)}% הושלם</span>
-              <span>עמוד {currentPage + 1} מתוך {totalPages} • {totalAnsweredQuestions} מתוך {questions.length} שאלות נענו</span>
+              <span>עמוד {currentPage + 1} מתוך {totalPages} • {totalAnsweredQuestions} מתוך {wocaQuestions.length} שאלות נענו</span>
             </div>
           </div>
         </div>
