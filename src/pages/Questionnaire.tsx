@@ -5,33 +5,23 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from 'uuid';
-import GroupIdForm from '@/components/GroupIdForm';
 import QuestionnairePage from '@/components/QuestionnairePage';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { CheckCircle } from "lucide-react";
 import { wocaQuestions } from '@/data/wocaQuestions';
-import { calculateWOCAScores, calculateWOCAScoresFromResponses, applyReverseScoring } from '@/utils/wocaCalculations';
-
-interface PersonalDetails {
-  fullName: string;
-  education: string;
-  profession: string;
-  organization: string;
-  experienceYears: number;
-  email: string;
-  phone: string;
-}
+import { calculateWOCAScores, calculateWOCAScoresFromResponses } from '@/utils/wocaCalculations';
 
 const Questionnaire = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const personalDetails = location.state?.personalDetails as PersonalDetails | undefined;
-  
-  const [groupId, setGroupId] = useState<string>('');
-  const [showGroupIdForm, setShowGroupIdForm] = useState(true);
+  const [showMetadataForm, setShowMetadataForm] = useState(true);
+  const [fullName, setFullName] = useState('');
+  const [workshopId, setWorkshopId] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,15 +39,17 @@ const Questionnaire = () => {
     return first36Questions.slice(startIndex, endIndex);
   };
 
-  useEffect(() => {
-    if (!personalDetails) {
-      navigate('/personal-details');
+  const handleMetadataSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullName.trim() || !workshopId.trim()) {
+      toast({
+        title: "שגיאה",
+        description: "יש למלא את כל השדות הנדרשים",
+        variant: "destructive",
+      });
+      return;
     }
-  }, [personalDetails, navigate]);
-
-  const handleGroupIdSubmit = (id: string) => {
-    setGroupId(id);
-    setShowGroupIdForm(false);
+    setShowMetadataForm(false);
   };
 
   const handleAnswer = (questionId: number, value: number) => {
@@ -98,28 +90,8 @@ const Questionnaire = () => {
     try {
       // Only process first 36 questions
       const first36Questions = wocaQuestions.slice(0, 36);
-      const scores = calculateWOCAScores(first36Questions, answers);
-      const overallScore = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.keys(scores).length;
       
-      // Create detailed question responses with reverse scoring applied
-      const questionResponses = first36Questions.map(question => {
-        const rawScore = answers[question.id];
-        if (rawScore === undefined) return null;
-        
-        // Apply reverse scoring if needed
-        const finalScore = question.reversed ? applyReverseScoring(rawScore) : rawScore;
-        
-        return {
-          questionId: question.id,
-          score: finalScore,
-          rawScore: rawScore,
-          dimension: question.domain,
-          isReversed: question.reversed,
-          questionText: question.text
-        };
-      }).filter(response => response !== null);
-      
-      // Prepare individual question answers as q1-q36 (store original answers, not reverse-scored)
+      // Prepare individual question answers as q1-q36
       const questionAnswers: { [key: string]: number } = {};
       first36Questions.forEach(question => {
         if (answers[question.id] !== undefined) {
@@ -129,21 +101,13 @@ const Questionnaire = () => {
       
       const insertData = {
         id: uuidv4(),
-        full_name: personalDetails?.fullName || '',
-        education: personalDetails?.education || null,
-        profession: personalDetails?.profession || null,
-        organization: personalDetails?.organization || null,
-        experience_years: personalDetails?.experienceYears || null,
-        email: personalDetails?.email || '',
-        phone: personalDetails?.phone || null,
-        group_id: groupId,
-        overall_score: overallScore,
-        question_responses: questionResponses,
+        full_name: fullName,
+        workshop_id: workshopId,
+        survey_type: 'WOCA',
         ...questionAnswers,
       };
 
-      console.log('Attempting to insert data:', insertData);
-      console.log('Question responses:', questionResponses);
+      console.log('Attempting to insert WOCA data:', insertData);
       
       const { error } = await supabase
         .from('woca_responses')
@@ -160,7 +124,7 @@ const Questionnaire = () => {
         return;
       }
 
-      console.log('Data saved successfully');
+      console.log('WOCA data saved successfully');
       
       // Show completion screen
       setShowCompletionScreen(true);
@@ -177,54 +141,19 @@ const Questionnaire = () => {
     }
   };
 
-  const fetchGroupScores = async () => {
-    try {
-      // Fetch all responses for this group
-      const { data: groupResponses, error } = await supabase
-        .from('woca_responses')
-        .select('question_responses')
-        .eq('group_id', groupId);
-
-      if (error) {
-        console.error('Error fetching group scores:', error);
-        return null;
-      }
-
-      if (!groupResponses || groupResponses.length === 0) {
-        return null;
-      }
-
-      // Aggregate all question responses from all group members
-      const allQuestionResponses: any[] = [];
-      groupResponses.forEach(response => {
-        if (response.question_responses && Array.isArray(response.question_responses)) {
-          allQuestionResponses.push(...response.question_responses);
-        }
-      });
-
-      // Calculate group averages using the new function
-      return calculateWOCAScoresFromResponses(allQuestionResponses);
-    } catch (error) {
-      console.error('Error calculating group scores:', error);
-      return null;
-    }
-  };
-
   const handleContinueToResults = async () => {
     const first36Questions = wocaQuestions.slice(0, 36);
     const individualScores = calculateWOCAScores(first36Questions, answers);
-    const groupScores = await fetchGroupScores();
     const overallScore = Object.values(individualScores).reduce((sum, score) => sum + score, 0) / Object.keys(individualScores).length;
     
     navigate('/results', {
       state: {
-        scores: groupScores || individualScores,
+        scores: individualScores,
         individualScores,
-        groupScores,
         overallScore,
-        personalDetails,
         answers,
-        groupId
+        fullName,
+        workshopId
       }
     });
   };
@@ -235,8 +164,68 @@ const Questionnaire = () => {
   ).length;
   const progress = (totalAnsweredQuestions / 36) * 100;
 
-  if (showGroupIdForm) {
-    return <GroupIdForm onSubmit={handleGroupIdSubmit} />;
+  // Show metadata form
+  if (showMetadataForm) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 flex items-center justify-center" dir="rtl">
+        <Card className="w-full max-w-md shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+          <CardContent className="p-8">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                שאלון WOCA
+              </h1>
+              <p className="text-gray-600 text-lg leading-relaxed text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                נא למלא את הפרטים הבאים לפני תחילת השאלון
+              </p>
+            </div>
+            
+            <form onSubmit={handleMetadataSubmit} className="space-y-6">
+              <div className="space-y-3">
+                <Label htmlFor="fullName" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                  שם מלא *
+                </Label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="הזינו את שמכם המלא"
+                  required
+                  className="h-14 text-lg text-right border-2 focus:border-blue-500 transition-colors"
+                  dir="rtl"
+                  style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                />
+              </div>
+              
+              <div className="space-y-3">
+                <Label htmlFor="workshopId" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                  קוד הסדנה *
+                </Label>
+                <Input
+                  id="workshopId"
+                  type="text"
+                  value={workshopId}
+                  onChange={(e) => setWorkshopId(e.target.value)}
+                  placeholder="הזינו את קוד הסדנה"
+                  required
+                  className="h-14 text-lg text-right border-2 focus:border-blue-500 transition-colors"
+                  dir="rtl"
+                  style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                />
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="w-full h-14 text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+              >
+                התחל שאלון
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   // Show completion screen
@@ -278,7 +267,7 @@ const Questionnaire = () => {
               שאלון WOCA
             </h1>
             <p className="text-lg text-gray-600 font-medium text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-              קבוצה: <span className="text-blue-600 font-bold">{groupId}</span>
+              משתתף: <span className="text-blue-600 font-bold">{fullName}</span> | סדנה: <span className="text-blue-600 font-bold">{workshopId}</span>
             </p>
           </div>
           
