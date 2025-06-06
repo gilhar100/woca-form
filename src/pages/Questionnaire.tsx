@@ -20,6 +20,7 @@ const Questionnaire = () => {
   const { toast } = useToast();
   
   const [showMetadataForm, setShowMetadataForm] = useState(true);
+  const [fullName, setFullName] = useState('');
   const [groupId, setGroupId] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
@@ -38,8 +39,23 @@ const Questionnaire = () => {
     return first36Questions.slice(startIndex, endIndex);
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ 
+      top: 0, 
+      behavior: 'smooth' 
+    });
+  };
+
   const handleMetadataSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!fullName.trim()) {
+      toast({
+        title: "שגיאה",
+        description: "יש למלא את השם המלא",
+        variant: "destructive",
+      });
+      return;
+    }
     if (!groupId.trim()) {
       toast({
         title: "שגיאה",
@@ -49,6 +65,8 @@ const Questionnaire = () => {
       return;
     }
     setShowMetadataForm(false);
+    // Scroll to top when transitioning to questionnaire
+    setTimeout(scrollToTop, 100);
   };
 
   const handleAnswer = (questionId: number, value: number) => {
@@ -71,8 +89,8 @@ const Questionnaire = () => {
     if (currentPage < totalPages - 1) {
       setCurrentPage(currentPage + 1);
       setShowValidation(false);
-      // Auto-scroll to top after page change
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Auto-scroll to top after page change with a small delay
+      setTimeout(scrollToTop, 100);
     } else {
       handleSubmit();
     }
@@ -82,8 +100,8 @@ const Questionnaire = () => {
     if (currentPage > 0) {
       setCurrentPage(currentPage - 1);
       setShowValidation(false);
-      // Auto-scroll to top after page change
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Auto-scroll to top after page change with a small delay
+      setTimeout(scrollToTop, 100);
     }
   };
 
@@ -104,9 +122,9 @@ const Questionnaire = () => {
       
       const insertData = {
         id: uuidv4(),
-        full_name: '', // Empty since we removed the name field
-        group_id: parseInt(groupId) || null, // Use group_id instead of workshop_id
-        email: '', // Add empty email to satisfy schema requirement
+        full_name: fullName,
+        group_id: parseInt(groupId) || null,
+        email: '', // Empty email since it's required by schema
         survey_type: 'WOCA',
         ...questionAnswers,
       };
@@ -132,6 +150,8 @@ const Questionnaire = () => {
       
       // Show completion screen
       setShowCompletionScreen(true);
+      // Scroll to top for completion screen
+      setTimeout(scrollToTop, 100);
       
     } catch (error) {
       console.error('Unexpected error:', error);
@@ -162,11 +182,28 @@ const Questionnaire = () => {
                 שאלון WOCA
               </h1>
               <p className="text-gray-600 text-lg leading-relaxed text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                נא למלא את קוד הקבוצה לפני תחילת השאלון
+                נא למלא את הפרטים הבאים לפני תחילת השאלון
               </p>
             </div>
             
             <form onSubmit={handleMetadataSubmit} className="space-y-6">
+              <div className="space-y-3">
+                <Label htmlFor="fullName" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                  שם מלא *
+                </Label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="הזינו את השם המלא"
+                  required
+                  className="h-14 text-lg text-right border-2 focus:border-blue-500 transition-colors"
+                  dir="rtl"
+                  style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                />
+              </div>
+
               <div className="space-y-3">
                 <Label htmlFor="groupId" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                   קוד קבוצה *
@@ -231,7 +268,7 @@ const Questionnaire = () => {
               שאלון WOCA
             </h1>
             <p className="text-lg text-gray-600 font-medium text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-              קוד קבוצה: <span className="text-blue-600 font-bold">{groupId}</span>
+              שם: <span className="text-blue-600 font-bold">{fullName}</span> • קוד קבוצה: <span className="text-blue-600 font-bold">{groupId}</span>
             </p>
           </div>
           

@@ -6,16 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface GroupIdFormProps {
-  onSubmit: (groupId: string) => void;
+  onSubmit: (fullName: string, groupId: string) => void;
 }
 
 const GroupIdForm = ({ onSubmit }: GroupIdFormProps) => {
+  const [fullName, setFullName] = useState('');
   const [groupId, setGroupId] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (groupId.trim()) {
-      onSubmit(groupId.trim());
+    if (fullName.trim() && groupId.trim()) {
+      onSubmit(fullName.trim(), groupId.trim());
     }
   };
 
@@ -27,11 +28,28 @@ const GroupIdForm = ({ onSubmit }: GroupIdFormProps) => {
             שאלון להערכת תרבות ארגונית
           </CardTitle>
           <p className="text-gray-600 text-lg leading-relaxed text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-            לפני שמתחילים, נא להזין את קוד הקבוצה שלכם
+            לפני שמתחילים, נא למלא את הפרטים הבאים
           </p>
         </CardHeader>
         <CardContent className="px-8 pb-8">
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-3">
+              <Label htmlFor="fullName" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                שם מלא *
+              </Label>
+              <Input
+                id="fullName"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="הזינו את השם המלא"
+                required
+                className="h-14 text-lg text-right border-2 focus:border-blue-500 transition-colors"
+                dir="rtl"
+                style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+              />
+            </div>
+
             <div className="space-y-3">
               <Label htmlFor="groupId" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                 קוד קבוצה *
@@ -48,10 +66,11 @@ const GroupIdForm = ({ onSubmit }: GroupIdFormProps) => {
                 style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
               />
             </div>
+            
             <Button 
               type="submit" 
               className="w-full h-14 text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
-              disabled={!groupId.trim()}
+              disabled={!fullName.trim() || !groupId.trim()}
               style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
             >
               התחל שאלון
