@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CheckCircle } from "lucide-react";
 import { wocaQuestions } from '@/data/wocaQuestions';
-import { calculateWOCAScores, calculateWOCAScoresFromResponses } from '@/utils/wocaCalculations';
+import { calculateWOCAScores } from '@/utils/wocaCalculations';
 
 const Questionnaire = () => {
   const location = useLocation();
@@ -103,6 +103,7 @@ const Questionnaire = () => {
         id: uuidv4(),
         full_name: fullName,
         workshop_id: workshopId,
+        email: '', // Add empty email to satisfy schema requirement
         survey_type: 'WOCA',
         ...questionAnswers,
       };
