@@ -20,8 +20,7 @@ const Questionnaire = () => {
   const { toast } = useToast();
   
   const [showMetadataForm, setShowMetadataForm] = useState(true);
-  const [fullName, setFullName] = useState('');
-  const [workshopId, setWorkshopId] = useState('');
+  const [groupId, setGroupId] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,10 +40,10 @@ const Questionnaire = () => {
 
   const handleMetadataSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !workshopId.trim()) {
+    if (!groupId.trim()) {
       toast({
         title: "שגיאה",
-        description: "יש למלא את כל השדות הנדרשים",
+        description: "יש למלא את קוד הקבוצה",
         variant: "destructive",
       });
       return;
@@ -72,6 +71,8 @@ const Questionnaire = () => {
     if (currentPage < totalPages - 1) {
       setCurrentPage(currentPage + 1);
       setShowValidation(false);
+      // Auto-scroll to top after page change
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       handleSubmit();
     }
@@ -81,6 +82,8 @@ const Questionnaire = () => {
     if (currentPage > 0) {
       setCurrentPage(currentPage - 1);
       setShowValidation(false);
+      // Auto-scroll to top after page change
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -101,8 +104,8 @@ const Questionnaire = () => {
       
       const insertData = {
         id: uuidv4(),
-        full_name: fullName,
-        workshop_id: parseInt(workshopId) || null, // Convert to number as expected by schema
+        full_name: '', // Empty since we removed the name field
+        group_id: parseInt(groupId) || null, // Use group_id instead of workshop_id
         email: '', // Add empty email to satisfy schema requirement
         survey_type: 'WOCA',
         ...questionAnswers,
@@ -142,23 +145,6 @@ const Questionnaire = () => {
     }
   };
 
-  const handleContinueToResults = async () => {
-    const first36Questions = wocaQuestions.slice(0, 36);
-    const individualScores = calculateWOCAScores(first36Questions, answers);
-    const overallScore = Object.values(individualScores).reduce((sum, score) => sum + score, 0) / Object.keys(individualScores).length;
-    
-    navigate('/results', {
-      state: {
-        scores: individualScores,
-        individualScores,
-        overallScore,
-        answers,
-        fullName,
-        workshopId
-      }
-    });
-  };
-
   // Calculate progress based on answered questions across first 36 questions only
   const totalAnsweredQuestions = Object.keys(answers).filter(questionId => 
     parseInt(questionId) <= 36
@@ -176,38 +162,21 @@ const Questionnaire = () => {
                 שאלון WOCA
               </h1>
               <p className="text-gray-600 text-lg leading-relaxed text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                נא למלא את הפרטים הבאים לפני תחילת השאלון
+                נא למלא את קוד הקבוצה לפני תחילת השאלון
               </p>
             </div>
             
             <form onSubmit={handleMetadataSubmit} className="space-y-6">
               <div className="space-y-3">
-                <Label htmlFor="fullName" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                  שם מלא *
+                <Label htmlFor="groupId" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                  קוד קבוצה *
                 </Label>
                 <Input
-                  id="fullName"
+                  id="groupId"
                   type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="הזינו את שמכם המלא"
-                  required
-                  className="h-14 text-lg text-right border-2 focus:border-blue-500 transition-colors"
-                  dir="rtl"
-                  style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-                />
-              </div>
-              
-              <div className="space-y-3">
-                <Label htmlFor="workshopId" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                  קוד הסדנה *
-                </Label>
-                <Input
-                  id="workshopId"
-                  type="text"
-                  value={workshopId}
-                  onChange={(e) => setWorkshopId(e.target.value)}
-                  placeholder="הזינו את קוד הסדנה"
+                  value={groupId}
+                  onChange={(e) => setGroupId(e.target.value)}
+                  placeholder="הזינו את קוד הקבוצה"
                   required
                   className="h-14 text-lg text-right border-2 focus:border-blue-500 transition-colors"
                   dir="rtl"
@@ -243,15 +212,9 @@ const Questionnaire = () => {
               הנתונים נקלטו בהצלחה
             </h1>
             
-            <div className="pt-6">
-              <Button
-                onClick={handleContinueToResults}
-                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg"
-                style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-              >
-                צפה בתוצאות
-              </Button>
-            </div>
+            <p className="text-xl text-gray-600 leading-relaxed" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+              תודה על השתתפותכם בשאלון
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -268,7 +231,7 @@ const Questionnaire = () => {
               שאלון WOCA
             </h1>
             <p className="text-lg text-gray-600 font-medium text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-              משתתף: <span className="text-blue-600 font-bold">{fullName}</span> | סדנה: <span className="text-blue-600 font-bold">{workshopId}</span>
+              קוד קבוצה: <span className="text-blue-600 font-bold">{groupId}</span>
             </p>
           </div>
           

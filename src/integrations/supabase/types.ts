@@ -686,9 +686,10 @@ export type Database = {
       }
       woca_responses: {
         Row: {
-        
           age: string | null
           answers: number[] | null
+          apathy_score: number | null
+          comfort_score: number | null
           consent_research: boolean | null
           created_at: string | null
           education: string | null
@@ -696,8 +697,9 @@ export type Database = {
           experience_years: number | null
           full_name: string
           gender: string | null
-          group_id: string | null
+          group_id: number | null
           id: string
+          opportunity_score: number | null
           organization: string | null
           overall_score: number | null
           phone: string | null
@@ -739,12 +741,15 @@ export type Database = {
           q8: number | null
           q9: number | null
           question_responses: Json | null
+          survey_type: string | null
+          war_score: number | null
           workshop_id: number | null
         }
         Insert: {
-       
           age?: string | null
           answers?: number[] | null
+          apathy_score?: number | null
+          comfort_score?: number | null
           consent_research?: boolean | null
           created_at?: string | null
           education?: string | null
@@ -752,8 +757,9 @@ export type Database = {
           experience_years?: number | null
           full_name: string
           gender?: string | null
-          group_id?: string | null
+          group_id?: number | null
           id: string
+          opportunity_score?: number | null
           organization?: string | null
           overall_score?: number | null
           phone?: string | null
@@ -795,12 +801,15 @@ export type Database = {
           q8?: number | null
           q9?: number | null
           question_responses?: Json | null
+          survey_type?: string | null
+          war_score?: number | null
           workshop_id?: number | null
         }
         Update: {
-       
           age?: string | null
           answers?: number[] | null
+          apathy_score?: number | null
+          comfort_score?: number | null
           consent_research?: boolean | null
           created_at?: string | null
           education?: string | null
@@ -808,8 +817,9 @@ export type Database = {
           experience_years?: number | null
           full_name?: string
           gender?: string | null
-          group_id?: string | null
+          group_id?: number | null
           id?: string
+          opportunity_score?: number | null
           organization?: string | null
           overall_score?: number | null
           phone?: string | null
@@ -851,6 +861,8 @@ export type Database = {
           q8?: number | null
           q9?: number | null
           question_responses?: Json | null
+          survey_type?: string | null
+          war_score?: number | null
           workshop_id?: number | null
         }
         Relationships: []

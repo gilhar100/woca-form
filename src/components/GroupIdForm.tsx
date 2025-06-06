@@ -34,7 +34,7 @@ const GroupIdForm = ({ onSubmit }: GroupIdFormProps) => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-3">
               <Label htmlFor="groupId" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                קוד הקבוצה *
+                קוד קבוצה *
               </Label>
               <Input
                 id="groupId"
