@@ -102,7 +102,7 @@ const Questionnaire = () => {
       const insertData = {
         id: uuidv4(),
         full_name: fullName,
-        workshop_id: workshopId,
+        workshop_id: parseInt(workshopId) || null, // Convert to number as expected by schema
         email: '', // Add empty email to satisfy schema requirement
         survey_type: 'WOCA',
         ...questionAnswers,
