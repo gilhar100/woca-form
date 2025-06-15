@@ -1,19 +1,24 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
 const Index = () => {
   const navigate = useNavigate();
+  
   const handleStart = () => {
     navigate('/personal-details');
   };
-  return <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
       <div className="max-w-3xl mx-auto">
         <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center">
             <CardTitle className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">WOCA</CardTitle>
-            
-            <p className="mt-4 text-zinc-950 font-bold text-xl">שאלון תודעה ארגונית - ד"ר יוסי שרעבי</p>
+            <p className="mt-2 text-zinc-600 font-medium text-lg">ד"ר יוסי שרעבי</p>
+            <p className="mt-4 text-zinc-950 font-bold text-xl">שאלון תודעה ארגונית</p>
           </CardHeader>
 
           <CardContent className="text-center">
@@ -23,6 +28,8 @@ const Index = () => {
           </CardContent>
         </Card>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
