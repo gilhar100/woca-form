@@ -11,11 +11,9 @@ const Index = () => {
       <div className="max-w-3xl mx-auto">
         <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center">
-            <CardTitle className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">אבחון תודעה ארגונית</CardTitle>
+            <CardTitle className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">WOCA</CardTitle>
             
-            <p className="text-lg text-gray-500 mt-4">
-              ברוכים הבאים לשאלון WOCA המיועד למדידת אזורי תודעה ארגונית
-            </p>
+            <p className="mt-4 text-zinc-950 font-bold text-xl">שאלון תודעה ארגונית - ד"ר יוסי שרעבי</p>
           </CardHeader>
 
           <CardContent className="text-center">
