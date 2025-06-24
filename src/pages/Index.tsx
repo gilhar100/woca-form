@@ -8,7 +8,7 @@ const Index = () => {
   const navigate = useNavigate();
   
   const handleStart = () => {
-    navigate('/personal-details');
+    navigate('/about');
   };
 
   return (
@@ -16,13 +16,13 @@ const Index = () => {
       <div className="max-w-3xl mx-auto">
         <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center">
-            <CardTitle className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">WOCA</CardTitle>
-            <p className="mt-2 text-zinc-600 font-medium text-lg">ד"ר יוסי שרעבי</p>
-            <p className="mt-4 text-zinc-950 font-bold text-xl">שאלון תודעה ארגונית</p>
+            <CardTitle className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>WOCA</CardTitle>
+            <p className="mt-2 text-zinc-600 font-medium text-lg" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>ד"ר יוסי שרעבי</p>
+            <p className="mt-4 text-zinc-950 font-bold text-xl" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>שאלון תודעה ארגונית</p>
           </CardHeader>
 
           <CardContent className="text-center">
-            <Button onClick={handleStart} className="w-full max-w-md bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg py-3">
+            <Button onClick={handleStart} className="w-full max-w-md bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg py-3" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
               התחל שאלון
             </Button>
           </CardContent>
