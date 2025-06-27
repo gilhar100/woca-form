@@ -147,12 +147,12 @@ const Questionnaire = () => {
               <CheckCircle className="w-24 h-24 text-green-500" />
             </div>
             
-            <h1 className="text-2xl font-bold text-black leading-relaxed font-sans">
-              הנתונים נקלטו בהצלחה
+            <h1 className="text-xl font-bold text-black leading-relaxed font-sans">
+              תודה רבה על מילוי השאלון
             </h1>
             
-            <p className="text-sm text-black font-sans">
-              תודה על השתתפותכם בשאלון
+            <p className="text-base text-black font-sans">
+              השתתפותכם תאפשר לנו לאבחן את התרבות הארגונית ולהעניק תובנות מותאמות לצמיחה ולפיתוח
             </p>
           </CardContent>
         </Card>
