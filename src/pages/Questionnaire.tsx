@@ -8,6 +8,7 @@ import QuestionnairePage from '@/components/QuestionnairePage';
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import { wocaQuestions } from '@/data/wocaQuestions';
+
 const Questionnaire = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -98,7 +99,6 @@ const Questionnaire = () => {
         full_name: personalDetails.fullName,
         group_id: parseInt(personalDetails.groupCode) || null,
         email: personalDetails.email || '',
-        // Use email from personal details or empty string
         survey_type: 'WOCA',
         ...questionAnswers
       };
@@ -139,96 +139,91 @@ const Questionnaire = () => {
 
   // Show completion screen
   if (showCompletionScreen) {
-    return <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center p-4" dir="rtl">
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center p-4" dir="rtl">
         <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm max-w-2xl w-full">
           <CardContent className="p-12 text-center space-y-8">
             <div className="flex justify-center">
               <CheckCircle className="w-24 h-24 text-green-500" />
             </div>
             
-            <h1 className="text-5xl font-bold text-gray-800 leading-relaxed" style={{
-            fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-          }}>
+            <h1 className="text-2xl font-bold text-black leading-relaxed font-sans">
               הנתונים נקלטו בהצלחה
             </h1>
             
-            <p className="mt-2 text-zinc-600 font-medium text-lg" style={{
-            fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-          }}>
-              ד"ר יוסי שרעבי
-            </p>
-            
-            <p className="text-xl text-gray-600 leading-relaxed" style={{
-            fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-          }}>
+            <p className="text-sm text-black font-sans">
               תודה על השתתפותכם בשאלון
             </p>
           </CardContent>
         </Card>
-      </div>;
+      </div>
+    );
   }
 
   // Don't render if no personal details
   if (!personalDetails) {
     return null;
   }
-  return <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
       <div className="max-w-4xl mx-auto">
         {/* Header with progress */}
         <div className="mb-8">
           <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2" style={{
-            fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-          }}>
+            <h1 className="text-2xl font-bold text-black mb-2 font-sans">
               שאלון WOCA
             </h1>
             <div className="mt-4 text-center space-y-3">
-              
-              <p className="text-base text-gray-600 leading-relaxed max-w-3xl mx-auto" style={{
-              fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-            }}>
+              <p className="text-base text-black leading-relaxed max-w-3xl mx-auto font-sans">
+                ברוכים הבאים לשאלון WOCA של חברת OPPORTUNITY.
+              </p>
+              <p className="text-base text-black leading-relaxed max-w-3xl mx-auto font-sans">
                 לפניך 36 שאלות שמטרתן לאבחן את התודעה הארגונית בארגון – כדי לזהות חוזקות, חולשות ודפוסי פעולה מרכזיים המשפיעים על התרבות הארגונית והיכולת להתמודד עם שינוי.
               </p>
-              <p className="text-base text-gray-600 leading-relaxed" style={{
-              fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-            }}>
+              <p className="text-base text-black leading-relaxed font-sans">
                 נשמח למענה כן ומדויק ככל האפשר. אין תשובות נכונות או שגויות – רק תיאור של המציאות כפי שהיא נתפסת עבורך.
               </p>
             </div>
-            <p className="text-lg text-gray-600 font-medium text-right mt-6" style={{
-            fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-          }}>
-              שם: <span className="text-blue-600 font-bold">{personalDetails.fullName}</span> • קוד קבוצה: <span className="text-blue-600 font-bold">{personalDetails.groupCode}</span>
+            <p className="text-sm text-black font-medium text-right mt-6 font-sans">
+              שם: <span className="text-black font-bold">{personalDetails.fullName}</span> • קוד קבוצה: <span className="text-black font-bold">{personalDetails.groupCode}</span>
             </p>
           </div>
           
           <div className="space-y-4 bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg">
             <Progress value={progress} className="h-4 bg-gray-200" dir="ltr" />
-            <div className="flex justify-between text-base text-gray-700 font-medium" style={{
-            fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-          }}>
-              <span className="text-blue-600 font-bold">{Math.round(progress)}% הושלם</span>
+            <div className="flex justify-between text-sm text-black font-medium font-sans">
+              <span className="text-black font-bold">{Math.round(progress)}% הושלם</span>
               <span>עמוד {currentPage + 1} מתוך {totalPages} • {totalAnsweredQuestions} מתוך 36 שאלות נענו</span>
             </div>
           </div>
         </div>
 
         {/* Current Page */}
-        <QuestionnairePage questions={getPageQuestions(currentPage)} answers={answers} onAnswer={handleAnswer} onNext={handleNext} onBack={handleBack} canGoBack={currentPage > 0} pageNumber={currentPage + 1} totalPages={totalPages} showValidation={showValidation} />
+        <QuestionnairePage 
+          questions={getPageQuestions(currentPage)} 
+          answers={answers} 
+          onAnswer={handleAnswer} 
+          onNext={handleNext} 
+          onBack={handleBack} 
+          canGoBack={currentPage > 0} 
+          pageNumber={currentPage + 1} 
+          totalPages={totalPages} 
+          showValidation={showValidation} 
+        />
 
         {/* Loading overlay for submission */}
-        {isSubmitting && <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" dir="rtl">
+        {isSubmitting && (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" dir="rtl">
             <div className="bg-white p-8 rounded-2xl text-center shadow-2xl">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto mb-6"></div>
-              <p className="text-xl font-semibold text-gray-800" style={{
-            fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-          }}>שומר תשובות...</p>
-              <p className="text-gray-600 mt-2" style={{
-            fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-          }}>אנא המתינו</p>
+              <p className="text-sm font-semibold text-black font-sans">שומר תשובות...</p>
+              <p className="text-sm text-black mt-2 font-sans">אנא המתינו</p>
             </div>
-          </div>}
+          </div>
+        )}
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Questionnaire;
