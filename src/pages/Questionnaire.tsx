@@ -7,26 +7,29 @@ import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from 'uuid';
 import QuestionnairePage from '@/components/QuestionnairePage';
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { CheckCircle } from "lucide-react";
 import { wocaQuestions } from '@/data/wocaQuestions';
-import { calculateWOCAScores } from '@/utils/wocaCalculations';
 
 const Questionnaire = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [showMetadataForm, setShowMetadataForm] = useState(true);
-  const [fullName, setFullName] = useState('');
-  const [groupId, setGroupId] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
   const [showCompletionScreen, setShowCompletionScreen] = useState(false);
+
+  // Get personal details from navigation state
+  const personalDetails = location.state?.personalDetails;
+  
+  // Redirect if no personal details
+  useEffect(() => {
+    if (!personalDetails) {
+      navigate('/personal-details');
+    }
+  }, [personalDetails, navigate]);
 
   const questionsPerPage = 9;
   const totalPages = 4; // 36 questions / 9 per page = 4 pages
@@ -44,29 +47,6 @@ const Questionnaire = () => {
       top: 0, 
       behavior: 'smooth' 
     });
-  };
-
-  const handleMetadataSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!fullName.trim()) {
-      toast({
-        title: "שגיאה",
-        description: "יש למלא את השם המלא",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (!groupId.trim()) {
-      toast({
-        title: "שגיאה",
-        description: "יש למלא את קוד הקבוצה",
-        variant: "destructive",
-      });
-      return;
-    }
-    setShowMetadataForm(false);
-    // Scroll to top when transitioning to questionnaire
-    setTimeout(scrollToTop, 100);
   };
 
   const handleAnswer = (questionId: number, value: number) => {
@@ -122,9 +102,9 @@ const Questionnaire = () => {
       
       const insertData = {
         id: uuidv4(),
-        full_name: fullName,
-        group_id: parseInt(groupId) || null,
-        email: '', // Empty email since it's required by schema
+        full_name: personalDetails.fullName,
+        group_id: parseInt(personalDetails.groupCode) || null,
+        email: personalDetails.email || '', // Use email from personal details or empty string
         survey_type: 'WOCA',
         ...questionAnswers,
       };
@@ -171,73 +151,6 @@ const Questionnaire = () => {
   ).length;
   const progress = (totalAnsweredQuestions / 36) * 100;
 
-  // Show metadata form
-  if (showMetadataForm) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 flex items-center justify-center" dir="rtl">
-        <Card className="w-full max-w-md shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
-          <CardContent className="p-8">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                שאלון WOCA
-              </h1>
-              <p className="mt-2 text-zinc-600 font-medium text-lg" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                ד"ר יוסי שרעבי
-              </p>
-              <p className="text-gray-600 text-lg leading-relaxed text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                נא למלא את הפרטים הבאים לפני תחילת השאלון
-              </p>
-            </div>
-            
-            <form onSubmit={handleMetadataSubmit} className="space-y-6">
-              <div className="space-y-3">
-                <Label htmlFor="fullName" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                  שם מלא *
-                </Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="הזינו את השם המלא"
-                  required
-                  className="h-14 text-lg text-right border-2 focus:border-blue-500 transition-colors"
-                  dir="rtl"
-                  style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-                />
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="groupId" className="text-lg font-semibold text-right block" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                  קוד קבוצה *
-                </Label>
-                <Input
-                  id="groupId"
-                  type="text"
-                  value={groupId}
-                  onChange={(e) => setGroupId(e.target.value)}
-                  placeholder="הזינו את קוד הקבוצה"
-                  required
-                  className="h-14 text-lg text-right border-2 focus:border-blue-500 transition-colors"
-                  dir="rtl"
-                  style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-                />
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full h-14 text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
-                style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-              >
-                התחל שאלון
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   // Show completion screen
   if (showCompletionScreen) {
     return (
@@ -265,6 +178,11 @@ const Questionnaire = () => {
     );
   }
 
+  // Don't render if no personal details
+  if (!personalDetails) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
       <div className="max-w-4xl mx-auto">
@@ -278,7 +196,7 @@ const Questionnaire = () => {
               ד"ר יוסי שרעבי
             </p>
             <p className="text-lg text-gray-600 font-medium text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-              שם: <span className="text-blue-600 font-bold">{fullName}</span> • קוד קבוצה: <span className="text-blue-600 font-bold">{groupId}</span>
+              שם: <span className="text-blue-600 font-bold">{personalDetails.fullName}</span> • קוד קבוצה: <span className="text-blue-600 font-bold">{personalDetails.groupCode}</span>
             </p>
           </div>
           
@@ -309,7 +227,7 @@ const Questionnaire = () => {
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" dir="rtl">
             <div className="bg-white p-8 rounded-2xl text-center shadow-2xl">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto mb-6"></div>
-              <p className="text-xl font-semibold text-gray-800" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>שומר תשובות...</p>
+              <p className="text-xl font-semibold text-gray-800" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segue UI", Roboto, sans-serif' }}>שומר תשובות...</p>
               <p className="text-gray-600 mt-2" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>אנא המתינו</p>
             </div>
           </div>
