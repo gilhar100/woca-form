@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Progress } from "@/components/ui/progress";
@@ -192,10 +191,18 @@ const Questionnaire = () => {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
               שאלון WOCA
             </h1>
-            <p className="mt-2 text-zinc-600 font-medium text-lg" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-              ד"ר יוסי שרעבי
-            </p>
-            <p className="text-lg text-gray-600 font-medium text-right" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+            <div className="mt-4 text-center space-y-3">
+              <p className="text-lg text-gray-700 font-medium leading-relaxed" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                ברוכים הבאים לשאלון WOCA של חברת OPPORTUNITY.
+              </p>
+              <p className="text-base text-gray-600 leading-relaxed max-w-3xl mx-auto" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                לפניך 36 שאלות שמטרתן לאבחן את התודעה הארגונית בארגון – כדי לזהות חוזקות, חולשות ודפוסי פעולה מרכזיים המשפיעים על התרבות הארגונית והיכולת להתמודד עם שינוי.
+              </p>
+              <p className="text-base text-gray-600 leading-relaxed" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                נשמח למענה כן ומדויק ככל האפשר. אין תשובות נכונות או שגויות – רק תיאור של המציאות כפי שהיא נתפסת עבורך.
+              </p>
+            </div>
+            <p className="text-lg text-gray-600 font-medium text-right mt-6" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
               שם: <span className="text-blue-600 font-bold">{personalDetails.fullName}</span> • קוד קבוצה: <span className="text-blue-600 font-bold">{personalDetails.groupCode}</span>
             </p>
           </div>
@@ -227,7 +234,7 @@ const Questionnaire = () => {
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" dir="rtl">
             <div className="bg-white p-8 rounded-2xl text-center shadow-2xl">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto mb-6"></div>
-              <p className="text-xl font-semibold text-gray-800" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segue UI", Roboto, sans-serif' }}>שומר תשובות...</p>
+              <p className="text-xl font-semibold text-gray-800" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>שומר תשובות...</p>
               <p className="text-gray-600 mt-2" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>אנא המתינו</p>
             </div>
           </div>
