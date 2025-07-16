@@ -24,6 +24,7 @@ interface QuestionnairePageProps {
   pageNumber: number;
   totalPages: number;
   showValidation: boolean;
+  startingQuestionNumber: number;
 }
 
 const QuestionnairePage = ({
@@ -35,7 +36,8 @@ const QuestionnairePage = ({
   canGoBack,
   pageNumber,
   totalPages,
-  showValidation
+  showValidation,
+  startingQuestionNumber
 }: QuestionnairePageProps) => {
   const handleAnswerChange = (questionId: number, value: number) => {
     onAnswer(questionId, value);
@@ -77,7 +79,7 @@ const QuestionnairePage = ({
               <div key={question.id} className="space-y-8">
                 <div className="flex items-start gap-4" dir="rtl">
                   <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    {index + 1}
+                    {startingQuestionNumber + index}
                   </div>
                   <h3 className="text-sm font-medium text-black text-right leading-relaxed flex-1 font-sans">
                     {question.text}

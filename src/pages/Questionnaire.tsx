@@ -209,6 +209,7 @@ const Questionnaire = () => {
           pageNumber={currentPage + 1} 
           totalPages={totalPages} 
           showValidation={showValidation} 
+          startingQuestionNumber={currentPage * questionsPerPage + 1}
         />
 
         {/* Loading overlay for submission */}
