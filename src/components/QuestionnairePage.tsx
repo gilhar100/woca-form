@@ -42,11 +42,11 @@ const QuestionnairePage = ({
   };
 
   const scaleLabels = {
-    5: 'בדרך כלל או תמיד',
-    4: 'לעיתים קרובות',
-    3: 'לפעמים',
-    2: 'לעיתים רחוקות',
-    1: 'אף פעם'
+    5: 'תמיד נכון',
+    4: 'נכון לעיתים קרובות',
+    3: 'די נכון',
+    2: 'נכון לעיתים רחוקות',
+    1: 'לא נכון אף פעם'
   };
 
   const allQuestionsAnswered = questions.every(q => answers[q.id] !== undefined);
