@@ -1,4 +1,3 @@
-
 export interface WOCAQuestion {
   id: number;
   text: string;
@@ -21,7 +20,7 @@ export const wocaQuestions: WOCAQuestion[] = [
   },
   {
     id: 3,
-    text: "לעיתים קשה להבין מהי ההיגיון שמאחורי החלטות ההנהלה",
+    text: "לעיתים קשה להבין מה ההיגיון שמאחורי החלטות ההנהלה",
     domain: "Comfort",
     reversed: true,
   },
@@ -189,7 +188,7 @@ export const wocaQuestions: WOCAQuestion[] = [
   },
   {
     id: 31,
-    text: "הישגים מוכרים, אך לא תמיד מחוברים לרגש או משמעות",
+    text: "הישגים מוכרים, אך לא תמיד מחוברים לרגש או למשמעות",
     domain: "Comfort",
     reversed: true,
   },
