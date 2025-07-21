@@ -154,6 +154,10 @@ const Questionnaire = () => {
             <p className="text-base text-black font-sans">
               השתתפותכם תאפשר לנו לאבחן את התרבות הארגונית ולהעניק תובנות מותאמות לצמיחה ולפיתוח
             </p>
+            
+            <p className="text-sm text-gray-600 font-sans mt-6">
+              חברת OPPORTUNITY מקיימת סדנאות הכשרה המבוססים על מודל SALIMA-WOCA.
+            </p>
           </CardContent>
         </Card>
       </div>
