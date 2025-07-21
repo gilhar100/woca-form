@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -5,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useIsMobile } from "@/hooks/use-mobile";
+
 interface PersonalDetailsForm {
   fullName: string;
   groupCode: string;
@@ -15,8 +18,10 @@ interface PersonalDetailsForm {
   email: string;
   phone: string;
 }
+
 const PersonalDetails = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const {
     register,
     handleSubmit,
@@ -24,6 +29,7 @@ const PersonalDetails = () => {
       errors
     }
   } = useForm<PersonalDetailsForm>();
+  
   const onSubmit = (data: PersonalDetailsForm) => {
     console.log('Personal details submitted:', data);
 
@@ -34,33 +40,41 @@ const PersonalDetails = () => {
       }
     });
   };
-  return <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4" dir="rtl">
+  
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-2 sm:p-4" dir="rtl">
       <div className="max-w-2xl mx-auto">
         <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" style={{
+          <CardHeader className="text-center px-4 sm:px-6 py-4 sm:py-6">
+            <CardTitle className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent`} style={{
             fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
           }}>
               פרטים אישיים
             </CardTitle>
-            <p className="mt-2 text-zinc-600 font-medium text-lg" style={{
+            <p className={`mt-2 text-zinc-600 font-medium ${isMobile ? 'text-base' : 'text-lg'}`} style={{
             fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
           }}>ד"ר יוסי שרעבי</p>
-            
           </CardHeader>
           
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <CardContent className="px-4 sm:px-6 pb-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
               {/* שם מלא */}
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-right block text-lg font-semibold" style={{
+                <Label htmlFor="fullName" className={`text-right block ${isMobile ? 'text-base' : 'text-lg'} font-semibold`} style={{
                 fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>שם מלא *</Label>
-                <Input id="fullName" {...register('fullName', {
-                required: 'שדה חובה'
-              })} className="text-right h-12 text-lg border-2 focus:border-blue-500 transition-colors" placeholder="הזן שם מלא" dir="rtl" style={{
-                fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              }} />
+                <Input 
+                  id="fullName" 
+                  {...register('fullName', {
+                    required: 'שדה חובה'
+                  })} 
+                  className={`text-right ${isMobile ? 'h-12 text-base' : 'h-12 text-lg'} border-2 focus:border-blue-500 transition-colors`} 
+                  placeholder="הזן שם מלא" 
+                  dir="rtl" 
+                  style={{
+                    fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                  }} 
+                />
                 {errors.fullName && <p className="text-red-500 text-sm text-right" style={{
                 fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>{errors.fullName.message}</p>}
@@ -68,14 +82,21 @@ const PersonalDetails = () => {
 
               {/* קוד קבוצה */}
               <div className="space-y-2">
-                <Label htmlFor="groupCode" className="text-right block text-lg font-semibold" style={{
+                <Label htmlFor="groupCode" className={`text-right block ${isMobile ? 'text-base' : 'text-lg'} font-semibold`} style={{
                 fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>קוד קבוצה *</Label>
-                <Input id="groupCode" {...register('groupCode', {
-                required: 'שדה חובה'
-              })} className="text-right h-12 text-lg border-2 focus:border-blue-500 transition-colors" placeholder="הזן קוד קבוצה" dir="rtl" style={{
-                fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              }} />
+                <Input 
+                  id="groupCode" 
+                  {...register('groupCode', {
+                    required: 'שדה חובה'
+                  })} 
+                  className={`text-right ${isMobile ? 'h-12 text-base' : 'h-12 text-lg'} border-2 focus:border-blue-500 transition-colors`} 
+                  placeholder="הזן קוד קבוצה" 
+                  dir="rtl" 
+                  style={{
+                    fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                  }} 
+                />
                 {errors.groupCode && <p className="text-red-500 text-sm text-right" style={{
                 fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>{errors.groupCode.message}</p>}
@@ -86,9 +107,16 @@ const PersonalDetails = () => {
                 <Label htmlFor="education" className="text-right block" style={{
                 fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>השכלה</Label>
-                <Input id="education" {...register('education')} className="text-right" placeholder="תואר, מקצוע, וכו'" dir="rtl" style={{
-                fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              }} />
+                <Input 
+                  id="education" 
+                  {...register('education')} 
+                  className={`text-right ${isMobile ? 'h-11' : 'h-10'}`} 
+                  placeholder="תואר, מקצוע, וכו'" 
+                  dir="rtl" 
+                  style={{
+                    fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                  }} 
+                />
               </div>
 
               {/* מקצוע */}
@@ -96,9 +124,16 @@ const PersonalDetails = () => {
                 <Label htmlFor="profession" className="text-right block" style={{
                 fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>מקצוע</Label>
-                <Input id="profession" {...register('profession')} className="text-right" placeholder="תפקיד נוכחי" dir="rtl" style={{
-                fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              }} />
+                <Input 
+                  id="profession" 
+                  {...register('profession')} 
+                  className={`text-right ${isMobile ? 'h-11' : 'h-10'}`} 
+                  placeholder="תפקיד נוכחי" 
+                  dir="rtl" 
+                  style={{
+                    fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                  }} 
+                />
               </div>
 
               {/* ארגון */}
@@ -106,9 +141,16 @@ const PersonalDetails = () => {
                 <Label htmlFor="organization" className="text-right block" style={{
                 fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>ארגון/חברה</Label>
-                <Input id="organization" {...register('organization')} className="text-right" placeholder="שם מקום העבודה" dir="rtl" style={{
-                fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              }} />
+                <Input 
+                  id="organization" 
+                  {...register('organization')} 
+                  className={`text-right ${isMobile ? 'h-11' : 'h-10'}`} 
+                  placeholder="שם מקום העבודה" 
+                  dir="rtl" 
+                  style={{
+                    fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segue UI", Roboto, sans-serif'
+                  }} 
+                />
               </div>
 
               {/* שנות ניסיון */}
@@ -116,12 +158,20 @@ const PersonalDetails = () => {
                 <Label htmlFor="experienceYears" className="text-right block" style={{
                 fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>שנות ניסיון</Label>
-                <Input id="experienceYears" type="number" {...register('experienceYears', {
-                valueAsNumber: true,
-                min: 0
-              })} className="text-right" placeholder="מספר שנות ניסיון" dir="rtl" style={{
-                fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              }} />
+                <Input 
+                  id="experienceYears" 
+                  type="number" 
+                  {...register('experienceYears', {
+                    valueAsNumber: true,
+                    min: 0
+                  })} 
+                  className={`text-right ${isMobile ? 'h-11' : 'h-10'}`} 
+                  placeholder="מספר שנות ניסיון" 
+                  dir="rtl" 
+                  style={{
+                    fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                  }} 
+                />
               </div>
 
               {/* אימייל */}
@@ -129,9 +179,16 @@ const PersonalDetails = () => {
                 <Label htmlFor="email" className="text-right block" style={{
                 fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>אימייל</Label>
-                <Input id="email" type="email" {...register('email')} className="text-left" placeholder="example@email.com" style={{
-                fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              }} />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  {...register('email')} 
+                  className={`text-left ${isMobile ? 'h-11' : 'h-10'}`} 
+                  placeholder="example@email.com" 
+                  style={{
+                    fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                  }} 
+                />
               </div>
 
               {/* טלפון */}
@@ -139,21 +196,37 @@ const PersonalDetails = () => {
                 <Label htmlFor="phone" className="text-right block" style={{
                 fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>טלפון</Label>
-                <Input id="phone" {...register('phone')} className="text-left" placeholder="050-1234567" style={{
-                fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              }} />
+                <Input 
+                  id="phone" 
+                  {...register('phone')} 
+                  className={`text-left ${isMobile ? 'h-11' : 'h-10'}`} 
+                  placeholder="050-1234567" 
+                  style={{
+                    fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                  }} 
+                />
               </div>
 
               {/* כפתורים */}
-              <div className="flex gap-4 justify-center pt-6">
-                <Button type="button" variant="outline" onClick={() => navigate('/about')} className="px-8" style={{
-                fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              }}>
+              <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'gap-4 justify-center'} pt-4 sm:pt-6`}>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => navigate('/about')} 
+                  className={`${isMobile ? 'w-full h-12' : 'px-8'}`} 
+                  style={{
+                    fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                  }}
+                >
                   חזור
                 </Button>
-                <Button type="submit" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8" style={{
-                fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              }}>
+                <Button 
+                  type="submit" 
+                  className={`bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white ${isMobile ? 'w-full h-12' : 'px-8'}`} 
+                  style={{
+                    fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                  }}
+                >
                   המשך לשאלון
                 </Button>
               </div>
@@ -161,6 +234,8 @@ const PersonalDetails = () => {
           </CardContent>
         </Card>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default PersonalDetails;
