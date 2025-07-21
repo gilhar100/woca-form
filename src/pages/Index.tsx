@@ -19,6 +19,7 @@ const Index = () => {
             <CardTitle className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>WOCA</CardTitle>
             <p className="mt-2 text-zinc-600 font-medium text-lg" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>ד"ר יוסי שרעבי</p>
             <p className="mt-4 text-zinc-950 font-bold text-xl" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>שאלון תודעה ארגונית</p>
+            <p className="mt-3 text-zinc-700 text-base leading-relaxed px-4" style={{ fontFamily: 'Assistant, Alef, "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>מערכת SALIMA-WOCA היא כלי אבחון ארגוני מקיף למנהלים וארגונים הפותח על ידי ד״ר יוסי שרעבי. שאלון אזור תודעה ארגונית מסוג WOCA מכיל 36 היגדים ומזהה את ה- DNA של הארגון.</p>
           </CardHeader>
 
           <CardContent className="text-center">
