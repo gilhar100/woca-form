@@ -163,7 +163,7 @@ const Questionnaire = () => {
             </p>
             
             <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-600 font-sans mt-4 sm:mt-6`}>
-              חברת OPPORTUNITY מקיימת סדנאות הכשרה המבוססים על מודל SALIMA-WOCA.
+              חברת OPPORTUNITY מקיימת סדנאות הכשרה המבוססות על מודל SALIMA-WOCA.
             </p>
           </CardContent>
         </Card>
