@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import { wocaQuestions } from '@/data/wocaQuestions';
 import { useIsMobile } from "@/hooks/use-mobile";
+import { calculateWOCAScores, getDominantZone } from '@/utils/wocaCalculations';
 
 const Questionnaire = () => {
   const location = useLocation();
@@ -92,6 +93,10 @@ const Questionnaire = () => {
       // Only process first 36 questions
       const first36Questions = wocaQuestions.slice(0, 36);
 
+      // Calculate WOCA scores
+      const wocaScores = calculateWOCAScores(first36Questions, answers);
+      const dominantZone = getDominantZone(wocaScores);
+
       // Prepare individual question answers as q1-q36
       const questionAnswers: {
         [key: string]: number;
@@ -101,18 +106,24 @@ const Questionnaire = () => {
           questionAnswers[`q${question.id}`] = answers[question.id];
         }
       });
+
       const insertData = {
         id: uuidv4(),
         full_name: personalDetails.fullName,
         group_id: parseInt(personalDetails.groupCode) || null,
         email: personalDetails.email || '',
         survey_type: 'WOCA',
+        war_score: wocaScores.War,
+        opportunity_score: wocaScores.Opportunity,
+        comfort_score: wocaScores.Comfort,
+        apathy_score: wocaScores.Apathy,
+        analyzed_score: dominantZone,
         ...questionAnswers
       };
+      
       console.log('Attempting to insert WOCA data:', insertData);
-      const {
-        error
-      } = await supabase.from('woca_responses').insert(insertData);
+      const { error } = await supabase.from('woca_responses').insert(insertData);
+      
       if (error) {
         console.error('Supabase error details:', error);
         toast({
@@ -122,6 +133,7 @@ const Questionnaire = () => {
         });
         return;
       }
+      
       console.log('WOCA data saved successfully');
 
       // Show completion screen
